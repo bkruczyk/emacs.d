@@ -190,9 +190,7 @@
 
 ;; built-ins
 (use-package linum
-  :commands (linum-mode global-linum-mode)
-  :config
-  (setq linum-format " %i "))
+  :commands (linum-mode global-linum-mode))
 
 (use-package recentf
   :init
@@ -337,7 +335,7 @@
 ;; vc
 (use-package magit
   :ensure t
-  :config
+  :init
   (bind-key "C-x g" 'magit-status)
   (global-git-commit-mode +1))
 

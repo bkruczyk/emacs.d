@@ -107,7 +107,8 @@
 (setq inhibit-x-resources t)
 
 ;; use custom color theme
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(add-to-list 'custom-theme-load-path
+             (concat (file-name-as-directory user-emacs-directory) "themes"))
 (load-theme 'badwolf t)
 
 ;; set font face
@@ -539,8 +540,10 @@
 
 (use-package misc
   :config
-  (setq custom-file "~/.emacs.d/custom.el")
+  (setq custom-file
+        (concat (file-name-as-directory user-emacs-directory) "custom.el"))
   (load custom-file 'no-error 'no-message)
-  (load "~/.emacs.d/secret.el" 'no-error 'no-message))
+  (load (concat (file-name-as-directory user-emacs-directory) "secret.el")
+        'no-error 'no-message))
 
 ;;; init.el ends here

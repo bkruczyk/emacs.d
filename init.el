@@ -96,6 +96,11 @@
 ;; .zsh file is shell script too
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
 
+;; display startup time
+(add-hook 'after-init-hook
+          (lambda ()
+            (message (format "Emacs started in %s" (emacs-init-time)))))
+
 ;;; ux
 
 ;; do not use .Xresources or .Xdefaults

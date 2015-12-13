@@ -308,6 +308,8 @@
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . gfm-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode)))
 
+(use-package rainbow-mode :ensure t)
+
 ;; ido et al
 (use-package ido-ubiquitous
   :ensure t

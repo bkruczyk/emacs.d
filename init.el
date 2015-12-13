@@ -352,17 +352,15 @@
   (diff-hl-dired-mode-unless-remote)
   (global-diff-hl-mode +1))
 
-;; lisps
 (use-package smartparens
   :ensure t
-  :commands (smartparens-global-mode smartparen-strict-mode)
-  :config
+  :commands (smartparens-mode smartparen-strict-mode)
+  :init
   (require 'smartparens-config)
-  (setq sp-base-key-bindings 'paredit)
-  (setq sp-autoskip-closing-pair 'always)
-  (smartparens-global-mode +1)
-  (sp-use-paredit-bindings)
-  (show-smartparens-global-mode +1))
+  (setq sp-base-key-bindings 'paredit
+        sp-autoskip-closing-pair 'always
+        sp-show-pair-delay 0)
+  (sp-use-paredit-bindings))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -389,6 +387,7 @@
 ;; proglang specific
 (add-hook 'prog-mode-hook
           (lambda ()
+            (show-smartparens-mode +1)
             (smartparens-mode +1)
             (flycheck-mode +1)))
 

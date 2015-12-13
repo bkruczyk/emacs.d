@@ -216,7 +216,7 @@
   :commands whitespace-mode
   :config
   (setq whitespace-line-column 80)
-  (setq whitespace-style '(face trailing lines-tail empty tabs)))
+  (setq whitespace-style '(face trailing empty tabs)))
 
 (use-package re-builder
   :commands re-builder

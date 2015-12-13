@@ -49,6 +49,9 @@
                       (abbreviate-file-name (buffer-file-name)) "%b"))
         " ★ " invocation-name))
 
+;; supress ad-redefinition messages
+(setq ad-redefinition-action 'accept)
+
 ;;; editing
 
 (setq-default indent-tabs-mode nil)   ;; don't use tabs to indent

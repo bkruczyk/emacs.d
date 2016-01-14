@@ -349,7 +349,7 @@
 
 (use-package smartparens
   :ensure t
-  :commands (smartparens-mode smartparen-strict-mode)
+  :commands (smartparens-mode smartparens-strict-mode)
   :init
   (require 'smartparens-config)
   (setq sp-base-key-bindings 'paredit

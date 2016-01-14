@@ -264,12 +264,6 @@
   (bind-key "C-h M-m" 'discover-my-major)
   (bind-key "C-h M-M" 'discover-my-mode))
 
-(use-package beacon
-  :ensure t
-  :config
-  (beacon-mode +1)
-  :diminish beacon-mode)
-
 (use-package volatile-highlights
   :ensure t
   :config

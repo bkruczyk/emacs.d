@@ -52,6 +52,9 @@
 ;; supress ad-redefinition messages
 (setq ad-redefinition-action 'accept)
 
+;; follow symlinks
+(setq vc-follow-symlinks t)
+
 ;;; editing
 
 (setq-default indent-tabs-mode nil)   ;; don't use tabs to indent

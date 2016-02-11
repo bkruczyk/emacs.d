@@ -116,8 +116,8 @@
 
 ;; set font face
 (set-face-attribute 'default nil
-                    :family "DejaVu Sans Mono"
-                    :height 100
+                    :family "Monaco"
+                    :height 90
                     :weight 'regular)
 
 ;; disable startup screen

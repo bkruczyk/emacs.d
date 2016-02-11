@@ -210,6 +210,8 @@
 
 (use-package org
   :commands org-mode
+  :init
+  (bind-key "C-c a" 'org-agenda)
   :config
   (setq org-log-done t)
   (setq org-directory "~/code/org")

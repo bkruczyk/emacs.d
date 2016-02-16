@@ -152,9 +152,9 @@
       mouse-wheel-scroll-amount '(2 ((shift) . 10)))
 
 ;; mode line settings
-(line-number-mode t)
-(column-number-mode t)
-(size-indication-mode t)
+;; (line-number-mode t)
+;; (column-number-mode t)
+;; (size-indication-mode t)
 
 ;; display key strokes faster
 (setq echo-keystrokes 0.1)
@@ -330,6 +330,13 @@
   :ensure t
   :config
   (ido-vertical-mode +1))
+
+(use-package smart-mode-line
+  :ensure t
+  :init
+  (setq sml/no-confirm-load-theme t)
+  (setq sml/theme 'respectful)
+  (sml/setup))
 
 ;; vc
 (use-package magit

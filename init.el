@@ -357,7 +357,8 @@
   :ensure t
   :config
   (diff-hl-dired-mode-unless-remote)
-  (global-diff-hl-mode +1))
+  (global-diff-hl-mode +1)
+  (diff-hl-margin-mode))
 
 (use-package smartparens
   :ensure t

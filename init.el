@@ -341,9 +341,11 @@
 ;; vc
 (use-package magit
   :ensure t
+  :ensure magit-gh-pulls
   :init
   (bind-key "C-x g" 'magit-status)
-  (global-git-commit-mode +1))
+  (global-git-commit-mode +1)
+  (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
 
 (use-package git-timemachine :ensure t)
 

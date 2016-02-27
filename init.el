@@ -33,7 +33,7 @@
 
 ;; reduce the frequency of garbage collection by making it happen on
 ;; each 50MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 50000000)
+(setq gc-cons-threshold 100000000)
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
@@ -114,12 +114,6 @@
              (concat (file-name-as-directory user-emacs-directory) "themes"))
 (load-theme 'badwolf t)
 
-;; set font face
-(set-face-attribute 'default nil
-                    :family "Monaco"
-                    :height 90
-                    :weight 'regular)
-
 ;; disable startup screen
 (setq inhibit-startup-screen t)
 
@@ -191,21 +185,21 @@
 
 (require 'use-package)
 
-;; built-ins
-(use-package linum
-  :commands (linum-mode global-linum-mode))
+;; built-in packages
+(defun recentf-ido ()
+  "Run recentf with ido completion."
+  (interactive)
+  (let ((file (ido-completing-read
+               "Choose recent file: "
+               recentf-list nil t)))
+    (when file (find-file file))))
 
 (use-package recentf
   :init
-  (bind-key "C-x M-f"
-            (lambda ()
-              (interactive)
-              (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
-                (when file
-                  (find-file file)))))
+  (bind-key "C-c C-f" 'recentf-ido)
   :config
-  (setq recentf-max-saved-items 200
-        recentf-max-menu-items 15)
+  (setq recentf-max-saved-items 100
+        recentf-max-menu-items 5)
   (recentf-mode +1))
 
 (use-package org
@@ -216,7 +210,8 @@
   :config
   (setq org-log-done t)
   (setq org-directory "~/code/org")
-  (setq org-default-notes-file (concat org-directory "/notes.org")))
+  (setq org-default-notes-file
+        (concat org-directory "/notes.org")))
 
 (use-package whitespace
   :commands whitespace-mode
@@ -241,11 +236,20 @@
         ido-auto-merge-work-directories-length -1
         ido-default-file-method 'selected-window))
 
-;; archlinux
+;; misc packages
 (use-package pkgbuild-mode
   :ensure t
+  :commands pkgbuild-mode
   :init
-  (setq auto-mode-alist (append '(("PKGBUILD$" . pkgbuild-mode)) auto-mode-alist)))
+  (setq auto-mode-alist
+        (append '(("PKGBUILD$" . pkgbuild-mode)) auto-mode-alist)))
+
+(use-package smart-mode-line
+  :ensure t
+  :init
+  (setq sml/no-confirm-load-theme t)
+  (setq sml/theme 'respectful)
+  (sml/setup))
 
 (use-package paradox
   :ensure t
@@ -276,28 +280,7 @@
   (volatile-highlights-mode +1)
   :diminish volatile-highlights-mode)
 
-(use-package operate-on-number
-  :ensure t
-  :ensure hydra
-  :config
-  (defhydra hydra-op-on-number (global-map "C-.")
-    "Operate on number."
-    ("+" apply-operation-to-number-at-point)
-    ("-" apply-operation-to-number-at-point)
-    ("*" apply-operation-to-number-at-point)
-    ("/" apply-operation-to-number-at-point)
-    ("\\" apply-operation-to-number-at-point)
-    ("^" apply-operation-to-number-at-point)
-    ("<" apply-operation-to-number-at-point)
-    (">" apply-operation-to-number-at-point)
-    ("#" apply-operation-to-number-at-point)
-    ("%" apply-operation-to-number-at-point)
-    ("'" operate-on-number-at-point)))
-
-(use-package zop-to-char
-  :ensure t
-  :init
-  (bind-key "s-z" 'zop-to-char))
+(use-package zop-to-char :ensure t)
 
 (use-package markdown-mode
   :ensure t
@@ -332,30 +315,24 @@
   :config
   (ido-vertical-mode +1))
 
-(use-package smart-mode-line
-  :ensure t
-  :init
-  (setq sml/no-confirm-load-theme t)
-  (setq sml/theme 'respectful)
-  (sml/setup))
-
 ;; vc
 (use-package magit
   :ensure t
   :ensure magit-gh-pulls
+  :commands magit-status
   :init
   (bind-key "C-x g" 'magit-status)
   (global-git-commit-mode +1)
+  :config
   (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
 
 (use-package git-timemachine :ensure t)
-
 (use-package gitconfig-mode :ensure t)
 (use-package gitignore-mode :ensure t)
 (use-package gitattributes-mode :ensure t)
-
-(use-package gist :ensure t)
-
+(use-package gist
+  :ensure t
+  :commands gist-mode)
 (use-package diff-hl
   :ensure t
   :config
@@ -377,7 +354,6 @@
   :ensure t
   :commands rainbow-delimiters-mode)
 
-;; company
 (use-package company
   :ensure t
   :config
@@ -395,7 +371,8 @@
   :config
   (setq flycheck-highlighting-mode nil))
 
-;; proglang specific
+;;; programming languages
+
 (add-hook 'prog-mode-hook
           (lambda ()
             (show-smartparens-mode +1)
@@ -424,7 +401,6 @@
   :config
   (add-hook 'clojure-mode-hook
             #'lisp-defaults))
-
 (use-package cider
   :ensure t
   :commands cider-mode
@@ -450,31 +426,22 @@
 (use-package inf-ruby
   :ensure t
   :commands (inf-ruby inf-ruby-mode))
-
 (use-package ruby-tools
   :ensure t
   :commands ruby-tools-mode)
-
-(use-package yari
-  :ensure t
-  :init
-  (bind-key "R" 'yari 'help-command))
-
 (use-package ruby-mode
   :ensure t
   :commands ruby-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("Rakefile\\'" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("Gemfile\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("Guardfile\\'" . ruby-mode))
-  (add-hook 'ruby-mode-hook
-            (lambda ()
-              (whitespace-mode +1)
-              (subword-mode +1)
-              (inf-ruby-minor-mode +1)
-              (ruby-tools-mode +1))))
+  (add-hook 'ruby-mode-hook (lambda ()
+                              (whitespace-mode +1)
+                              (subword-mode +1)
+                              (inf-ruby-minor-mode +1)
+                              (ruby-tools-mode +1))))
 
 ;; python
 (use-package python
@@ -490,7 +457,7 @@
               (anaconda-mode +1)
               (eldoc-mode +1))))
 
-;; web-mode
+;; web
 (use-package web-mode
   :ensure t
   :commands web-mode
@@ -524,19 +491,15 @@
   :commands js2-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.js\\'"    . js2-mode))
-  (add-to-list 'auto-mode-alist '("\\.pac\\'"   . js2-mode))
   (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
   :config
-  (add-hook 'js2-mode-hook
-            (lambda ()
-              (whitespace-mode +1)
-              (setq-local electric-layout-rules '((?\; . after)))
-              (setq mode-name "JS2")
-              (js2-imenu-extras-mode +1))))
+  (add-hook 'js2-mode-hook (lambda ()
+                             (whitespace-mode +1)
+                             (setq-local electric-layout-rules '((?\; . after))))))
 ;; yaml
-(use-package yaml-mode :ensure t
-  :commands yaml-mode
-  :config (add-hook 'yaml-mode-hook (lambda () (subword-mode +1))))
+(use-package yaml-mode
+  :ensure t
+  :commands yaml-mode)
 
 ;; xml
 (use-package nxml-mode
@@ -544,16 +507,17 @@
   :config
   (setq nxml-bind-meta-tab-to-complete-flag t)
   (setq nxml-slash-auto-complete-flag t)
-  (push '("<\\?xml" . nxml-mode) magic-mode-alist)
   ;; pom files should be treated as xml files
   (add-to-list 'auto-mode-alist '("\\.pom$" . nxml-mode)))
 
+;; custom
 (use-package misc
   :config
-  (setq custom-file
-        (concat (file-name-as-directory user-emacs-directory) "custom.el"))
+  (setq custom-file (concat (file-name-as-directory user-emacs-directory) "custom.el"))
   (load custom-file 'no-error 'no-message)
-  (load (concat (file-name-as-directory user-emacs-directory) "secret.el")
-        'no-error 'no-message))
+  (load (concat (file-name-as-directory user-emacs-directory) "secret.el") 'no-error 'no-message))
+
+(autoload 'hl7-mode "~/code/elisp/hl7-mode/hl7-mode.el" "Major mode for editing HL7v2 messages." t nil)
+(push '("^MSH|\\^~\\\\\\&" . hl7-mode) magic-mode-alist)
 
 ;;; init.el ends here

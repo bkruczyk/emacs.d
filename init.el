@@ -196,7 +196,7 @@
 
 (use-package recentf
   :init
-  (bind-key "C-c C-f" 'recentf-ido)
+  (bind-key "C-x F" 'recentf-ido)
   :config
   (setq recentf-max-saved-items 100
         recentf-max-menu-items 5)

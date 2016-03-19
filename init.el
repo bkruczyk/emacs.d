@@ -55,6 +55,11 @@
 ;; follow symlinks
 (setq vc-follow-symlinks t)
 
+;;; mail
+
+(setq message-kill-buffer-on-exit t)
+(load "~/.emacs.d/mail.el")
+
 ;;; editing
 
 (setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
@@ -244,6 +249,47 @@
   (setq auto-mode-alist
         (append '(("PKGBUILD$" . pkgbuild-mode)) auto-mode-alist)))
 
+(use-package notmuch
+  :ensure t
+  :commands notmuch
+  :init
+  (bind-key "C-c m" 'notmuch)
+  :config
+  (setq notmuch-search-oldest-first nil)
+  ;;(setq notmuch-fcc-dirs "sent")
+  (bind-key "a"
+            (lambda ()
+              "toggle archive"
+              (interactive)
+              (if (member "archive" (notmuch-search-get-tags))
+                  (notmuch-search-tag '("-archive" "+inbox"))
+                (notmuch-search-tag '("+archive" "-inbox" "-unread"))))
+            notmuch-search-mode-map)
+  (bind-key "a"
+            (lambda ()
+              "toggle archive"
+              (interactive)
+              (if (member "archive" (notmuch-show-get-tags))
+                  (notmuch-show-tag '("-archive" "+inbox"))
+                (notmuch-show-tag '("+archive" "-inbox" "-unread"))))
+            notmuch-show-mode-map)
+  (bind-key  "d"
+             (lambda ()
+               "toggle trash"
+               (interactive)
+               (if (member "trash" (notmuch-search-get-tags))
+                   (notmuch-search-tag '("-trash" "+inbox"))
+                 (notmuch-search-tag '("+trash" "-inbox" "-unread" "-archive"))))
+             notmuch-search-mode-map)
+  (bind-key "d"
+            (lambda ()
+              "toggle trash"
+              (interactive)
+              (if (member "trash" (notmuch-show-get-tags))
+                  (notmuch-show-tag '("-trash" "+inbox"))
+                (notmuch-show-tag '("+trash" "-inbox" "-unread" "-archive"))))
+            notmuch-show-mode-map))
+
 (use-package smart-mode-line
   :ensure t
   :init
@@ -369,7 +415,8 @@
   :ensure t
   :commands flycheck-mode
   :config
-  (setq flycheck-highlighting-mode nil))
+  (setq flycheck-highlighting-mode nil)
+  (setq flycheck-indication-mode 'right-fringe))
 
 ;;; programming languages
 

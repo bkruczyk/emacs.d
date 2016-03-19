@@ -155,8 +155,13 @@
 ;; (column-number-mode t)
 ;; (size-indication-mode t)
 
+(setq linum-format " %d ")
+
 ;; display key strokes faster
 (setq echo-keystrokes 0.1)
+
+;; don't display ediff navigation window in separate frame
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 ;;; keybindings
 

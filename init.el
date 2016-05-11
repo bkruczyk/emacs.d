@@ -114,9 +114,10 @@
 ;; do not use .Xresources or .Xdefaults
 (setq inhibit-x-resources t)
 
-;; use custom color theme
+;; set load path for custom themes
 (add-to-list 'custom-theme-load-path
              (concat (file-name-as-directory user-emacs-directory) "themes"))
+
 (load-theme 'badwolf t)
 
 ;; disable startup screen
@@ -181,7 +182,7 @@
 ;; toggle menu-bar visibility
 (global-set-key (kbd "<f12>") 'menu-bar-mode)
 
-;;; other packages
+;;; packages
 
 (require 'package)
 (add-to-list 'package-archives
@@ -195,22 +196,22 @@
 
 (require 'use-package)
 
-;; built-in packages
-(defun recentf-ido ()
-  "Run recentf with ido completion."
-  (interactive)
-  (let ((file (ido-completing-read
-               "Choose recent file: "
-               recentf-list nil t)))
-    (when file (find-file file))))
-
+;; builtins
 (use-package recentf
+  :commands recentf-ido
   :init
   (bind-key "C-x F" 'recentf-ido)
   :config
+  (recentf-mode +1)
   (setq recentf-max-saved-items 100
-        recentf-max-menu-items 5)
-  (recentf-mode +1))
+        recentf-max-menu-items 5))
+
+(defun recentf-ido ()
+  "Run recentf with ido completion."
+  (interactive)
+  (require 'recentf)
+  (let ((file (ido-completing-read "Pick recent file: " recentf-list nil )))
+    (when file (find-file file))))
 
 (use-package org
   :commands org-mode
@@ -234,6 +235,7 @@
   :config
   (setq reb-re-syntax 'string))
 
+;; TODO?: ido autoload
 (use-package ido
   :config
   (ido-mode +1)
@@ -246,7 +248,8 @@
         ido-auto-merge-work-directories-length -1
         ido-default-file-method 'selected-window))
 
-;; misc packages
+;; gnu and melpa packages
+
 (use-package pkgbuild-mode
   :ensure t
   :commands pkgbuild-mode
@@ -270,14 +273,6 @@
                   (notmuch-search-tag '("-archive" "+inbox"))
                 (notmuch-search-tag '("+archive" "-inbox" "-unread"))))
             notmuch-search-mode-map)
-  (bind-key "a"
-            (lambda ()
-              "toggle archive"
-              (interactive)
-              (if (member "archive" (notmuch-show-get-tags))
-                  (notmuch-show-tag '("-archive" "+inbox"))
-                (notmuch-show-tag '("+archive" "-inbox" "-unread"))))
-            notmuch-show-mode-map)
   (bind-key  "d"
              (lambda ()
                "toggle trash"
@@ -285,15 +280,7 @@
                (if (member "trash" (notmuch-search-get-tags))
                    (notmuch-search-tag '("-trash" "+inbox"))
                  (notmuch-search-tag '("+trash" "-inbox" "-unread" "-archive"))))
-             notmuch-search-mode-map)
-  (bind-key "d"
-            (lambda ()
-              "toggle trash"
-              (interactive)
-              (if (member "trash" (notmuch-show-get-tags))
-                  (notmuch-show-tag '("-trash" "+inbox"))
-                (notmuch-show-tag '("+trash" "-inbox" "-unread" "-archive"))))
-            notmuch-show-mode-map))
+             notmuch-search-mode-map))
 
 (use-package smart-mode-line
   :ensure t
@@ -321,6 +308,7 @@
 
 (use-package discover-my-major
   :ensure t
+  :commands discover-my-major discover-my-mode
   :init
   (bind-key "C-h M-m" 'discover-my-major)
   (bind-key "C-h M-M" 'discover-my-mode))
@@ -335,12 +323,14 @@
 
 (use-package markdown-mode
   :ensure t
-  :commands (markdown-mode)
+  :commands markdown-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . gfm-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode)))
 
-(use-package rainbow-mode :ensure t)
+(use-package rainbow-mode
+  :ensure t
+  :commands rainbow-mode)
 
 ;; ido et al
 (use-package ido-ubiquitous
@@ -352,11 +342,12 @@
   :ensure t
   :config
   (setq ido-enable-flex-matching t)
-  (setq ido-use-faces nil)
+  (setq ido-use-faces t)
   (flx-ido-mode +1))
 
 (use-package smex
   :ensure t
+  :commands smex smex-major-mode-commands
   :init
   (bind-key "M-x" 'smex)
   (bind-key "M-X" 'smex-major-mode-commands))
@@ -381,9 +372,7 @@
 (use-package gitconfig-mode :ensure t)
 (use-package gitignore-mode :ensure t)
 (use-package gitattributes-mode :ensure t)
-(use-package gist
-  :ensure t
-  :commands gist-mode)
+
 (use-package diff-hl
   :ensure t
   :config
@@ -393,8 +382,8 @@
 
 (use-package smartparens
   :ensure t
-  :commands (smartparens-mode smartparens-strict-mode)
-  :init
+  :commands smartparens-mode smartparens-strict-mode
+  :config
   (require 'smartparens-config)
   (setq sp-base-key-bindings 'paredit
         sp-autoskip-closing-pair 'always
@@ -407,23 +396,22 @@
 
 (use-package company
   :ensure t
+  :commands company-complete
+  :init
+  (bind-key "C-c SPC" 'company-complete)
   :config
+  (global-company-mode +1)
   (setq company-idle-delay 0.5)
   (setq company-tooltip-limit 10)
   (setq company-minimum-prefix-length 2)
   (setq company-tooltip-flip-when-above t)
-  (global-company-mode +1)
-  (bind-key "C-c SPC" 'company-complete)
   :diminish company-mode)
 
 (use-package flycheck
   :ensure t
   :commands flycheck-mode
   :config
-  (setq flycheck-highlighting-mode nil)
-  (setq flycheck-indication-mode 'right-fringe))
-
-;;; programming languages
+  (setq flycheck-indication-mode nil))
 
 (add-hook 'prog-mode-hook
           (lambda ()
@@ -432,36 +420,28 @@
             (flycheck-mode +1)))
 
 (defun lisp-defaults ()
-  "Turn on modes useful for Lisp programming."
+  "Enable modes useful for Lisp programming."
   (whitespace-mode +1)
-  (smartparens-strict-mode +1)
-  (rainbow-delimiters-mode +1)
   (subword-mode +1)
-  (eldoc-mode +1))
+  (eldoc-mode +1)
+  (smartparens-strict-mode +1)
+  (rainbow-delimiters-mode +1))
 
-(defvar my-lisp-mode-hook #'lisp-defaults)
+(add-hook 'emacs-lisp-mode-hook #'lisp-defaults)
 
-(add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (run-hooks 'my-lisp-mode-hook)
-            (setq mode-name "Elisp")))
-
-;; clojure
 (use-package clojure-mode
   :ensure t
   :commands clojure-mode
   :config
-  (add-hook 'clojure-mode-hook
-            #'lisp-defaults))
+  (add-hook 'clojure-mode-hook #'lisp-defaults))
+
 (use-package cider
   :ensure t
   :commands cider-mode
   :config
   (setq nrepl-log-messages t)
-  (add-hook 'cider-mode-hook
-            #'lisp-defaults))
+  (add-hook 'cider-mode-hook #'lisp-defaults))
 
-;; haskell
 (use-package haskell-mode
   :ensure t
   :commands haskell-mode
@@ -474,70 +454,14 @@
               (haskell-indentation-mode +1)
               (interactive-haskell-mode +1))))
 
-;; ruby
-(use-package inf-ruby
-  :ensure t
-  :commands (inf-ruby inf-ruby-mode))
-(use-package ruby-tools
-  :ensure t
-  :commands ruby-tools-mode)
-(use-package ruby-mode
-  :ensure t
-  :commands ruby-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("Rakefile\\'" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("Gemfile\\'" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("Guardfile\\'" . ruby-mode))
-  (add-hook 'ruby-mode-hook (lambda ()
-                              (whitespace-mode +1)
-                              (subword-mode +1)
-                              (inf-ruby-minor-mode +1)
-                              (ruby-tools-mode +1))))
-
-;; python
-(use-package python
-  :commands python-mode
-  :ensure anaconda-mode
-  :ensure company
-  :ensure company-anaconda
-  :config
-  (add-to-list 'company-backends 'company-anaconda)
-  (add-hook 'python-mode-hook
-            (lambda ()
-              (whitespace-mode +1)
-              (anaconda-mode +1)
-              (eldoc-mode +1))))
-
-;; web
 (use-package web-mode
   :ensure t
   :commands web-mode
-  :ensure smartparens
   :init
   (add-to-list 'auto-mode-alist '("\\.?html\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-  :config
-  (require 'smartparens)
-  (setq web-mode-enable-auto-pairing nil)
-  (sp-with-modes '(web-mode)
-    (sp-local-pair "%" "%"
-                   :unless '(sp-in-string-p)
-                   :post-handlers '(((lambda (&rest _ignored)
-                                       (just-one-space)
-                                       (save-excursion (insert " ")))
-                                     "SPC" "=" "#")))
-    (sp-local-pair "<% "  " %>" :insert "C-c %")
-    (sp-local-pair "<%= " " %>" :insert "C-c =")
-    (sp-local-pair "<%# " " %>" :insert "C-c #")
-    (sp-local-tag "%" "<% "  " %>")
-    (sp-local-tag "=" "<%= " " %>")
-    (sp-local-tag "#" "<%# " " %>")))
+  ;; (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+  )
 
-;; js
-(use-package json-mode
-  :ensure t
-  :commands json-mode)
 (use-package js2-mode
   :ensure t
   :commands js2-mode
@@ -547,19 +471,57 @@
   :config
   (add-hook 'js2-mode-hook (lambda ()
                              (whitespace-mode +1)
+                             (subword-mode +1)
                              (setq-local electric-layout-rules '((?\; . after))))))
-;; yaml
+
+(use-package json-mode
+  :ensure t
+  :commands json-mode)
+
+;; ;; ruby
+;; (use-package inf-ruby
+;;   :ensure t
+;;   :commands (inf-ruby inf-ruby-mode))
+;; (use-package ruby-tools
+;;   :ensure t
+;;   :commands ruby-tools-mode)
+;; (use-package ruby-mode
+;;   :ensure t
+;;   :commands ruby-mode
+;;   :config
+;;   (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
+;;   (add-to-list 'auto-mode-alist '("Rakefile\\'" . ruby-mode))
+;;   (add-to-list 'auto-mode-alist '("Gemfile\\'" . ruby-mode))
+;;   (add-to-list 'auto-mode-alist '("Guardfile\\'" . ruby-mode))
+;;   (add-hook 'ruby-mode-hook (lambda ()
+;;                               (whitespace-mode +1)
+;;                               (subword-mode +1)
+;;                               (inf-ruby-minor-mode +1)
+;;                               (ruby-tools-mode +1))))
+
+;; ;; python
+;; (use-package python
+;;   :commands python-mode
+;;   :ensure anaconda-mode
+;;   :ensure company
+;;   :ensure company-anaconda
+;;   :config
+;;   (add-to-list 'company-backends 'company-anaconda)
+;;   (add-hook 'python-mode-hook
+;;             (lambda ()
+;;               (whitespace-mode +1)
+;;               (anaconda-mode +1)
+;;               (eldoc-mode +1))))
+
 (use-package yaml-mode
   :ensure t
   :commands yaml-mode)
 
-;; xml
 (use-package nxml-mode
   :commands nxml-mode
   :config
   (setq nxml-bind-meta-tab-to-complete-flag t)
   (setq nxml-slash-auto-complete-flag t)
-  ;; pom files should be treated as xml files
   (add-to-list 'auto-mode-alist '("\\.pom$" . nxml-mode)))
 
 ;; custom
@@ -568,8 +530,5 @@
   (setq custom-file (concat (file-name-as-directory user-emacs-directory) "custom.el"))
   (load custom-file 'no-error 'no-message)
   (load (concat (file-name-as-directory user-emacs-directory) "secret.el") 'no-error 'no-message))
-
-(autoload 'hl7-mode "~/code/elisp/hl7-mode/hl7-mode.el" "Major mode for editing HL7v2 messages." t nil)
-(push '("^MSH|\\^~\\\\\\&" . hl7-mode) magic-mode-alist)
 
 ;;; init.el ends here

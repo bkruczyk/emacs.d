@@ -198,20 +198,28 @@
 
 ;; builtins
 (use-package recentf
-  :commands recentf-ido
+  ;; :commands recentf-ido
+  :commands ivy-recentf
   :init
-  (bind-key "C-x F" 'recentf-ido)
+  ;; (bind-key "C-x F" 'recentf-ido)
+  (bind-key "C-x F" 'ivy-recentf-load)
   :config
   (recentf-mode +1)
   (setq recentf-max-saved-items 100
         recentf-max-menu-items 5))
 
-(defun recentf-ido ()
-  "Run recentf with ido completion."
+(defun ivy-recentf-load ()
+    "Load recentf and run ivy-recentf."
   (interactive)
   (require 'recentf)
-  (let ((file (ido-completing-read "Pick recent file: " recentf-list nil )))
-    (when file (find-file file))))
+  (ivy-recentf))
+
+;; (defun recentf-ido ()
+;;   "Run recentf with ido completion."
+;;   (interactive)
+;;   (require 'recentf)
+;;   (let ((file (ido-completing-read "Pick recent file: " recentf-list nil )))
+;;     (when file (find-file file))))
 
 (use-package org
   :commands org-mode
@@ -235,20 +243,31 @@
   :config
   (setq reb-re-syntax 'string))
 
-;; TODO?: ido autoload
-(use-package ido
-  :config
-  (ido-mode +1)
-  (ido-everywhere +1)
-  (setq ido-enable-prefix nil
-        ido-enable-flex-matching t
-        ido-create-new-buffer 'always
-        ido-use-filename-at-point 'guess
-        ido-max-prospects 10
-        ido-auto-merge-work-directories-length -1
-        ido-default-file-method 'selected-window))
+;; ;; TODO?: ido autoload
+;; (use-package ido
+;;   :config
+;;   (ido-mode +1)
+;;   (ido-everywhere +1)
+;;   (setq ido-enable-prefix nil
+;;         ido-enable-flex-matching t
+;;         ido-create-new-buffer 'always
+;;         ido-use-filename-at-point 'guess
+;;         ido-max-prospects 10
+;;         ido-auto-merge-work-directories-length -1
+;;         ido-default-file-method 'selected-window))
 
 ;; gnu and melpa packages
+
+(use-package ivy
+  :ensure t
+  :ensure swiper
+  :ensure counsel
+  :init
+  (ivy-mode +1)
+  :config
+  (bind-key "C-s" 'swiper)
+  (bind-key "C-c C-r" 'ivy-resume)
+  (bind-key "M-x" 'counsel-M-x))
 
 (use-package evil
   :ensure t
@@ -304,15 +323,15 @@
   (setq paradox-execute-asynchronously t)
   (setq paradox-automatically-star t))
 
-(use-package anzu
-  :ensure t
-  :config
-  (global-anzu-mode +1)
-  (bind-key "M-%" 'anzu-query-replace)
-  (bind-key "C-M-%" 'anzu-query-replace-regexp)
-  (bind-key "C-. M-%" 'anzu-query-replace-at-cursor)
-  (bind-key "C-c C-. M-%" 'anzu-query-replace-at-cursor-thing)
-  :diminish anzu-mode)
+;; (use-package anzu
+;;   :ensure t
+;;   :config
+;;   (global-anzu-mode +1)
+;;   (bind-key "M-%" 'anzu-query-replace)
+;;   (bind-key "C-M-%" 'anzu-query-replace-regexp)
+;;   (bind-key "C-. M-%" 'anzu-query-replace-at-cursor)
+;;   (bind-key "C-c C-. M-%" 'anzu-query-replace-at-cursor-thing)
+;;   :diminish anzu-mode)
 
 (use-package discover-my-major
   :ensure t
@@ -340,30 +359,30 @@
   :ensure t
   :commands rainbow-mode)
 
-;; ido et al
-(use-package ido-ubiquitous
-  :ensure t
-  :config
-  (ido-ubiquitous-mode +1))
+;; ;; ido et al
+;; (use-package ido-ubiquitous
+;;   :ensure t
+;;   :config
+;;   (ido-ubiquitous-mode +1))
 
-(use-package flx-ido
-  :ensure t
-  :config
-  (setq ido-enable-flex-matching t)
-  (setq ido-use-faces t)
-  (flx-ido-mode +1))
+;; (use-package flx-ido
+;;   :ensure t
+;;   :config
+;;   (setq ido-enable-flex-matching t)
+;;   (setq ido-use-faces t)
+;;   (flx-ido-mode +1))
 
-(use-package smex
-  :ensure t
-  :commands smex smex-major-mode-commands
-  :init
-  (bind-key "M-x" 'smex)
-  (bind-key "M-X" 'smex-major-mode-commands))
+;; (use-package smex
+;;   :ensure t
+;;   :commands smex smex-major-mode-commands
+;;   :init
+;;   (bind-key "M-x" 'smex)
+;;   (bind-key "M-X" 'smex-major-mode-commands))
 
-(use-package ido-vertical-mode
-  :ensure t
-  :config
-  (ido-vertical-mode +1))
+;; (use-package ido-vertical-mode
+;;   :ensure t
+;;   :config
+;;   (ido-vertical-mode +1))
 
 ;; vc
 (use-package magit

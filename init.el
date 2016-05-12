@@ -250,6 +250,14 @@
 
 ;; gnu and melpa packages
 
+(use-package evil
+  :ensure t
+  :ensure evil-org
+  :ensure evil-smartparens
+  :init
+  (evil-mode +1)
+  (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
+
 (use-package pkgbuild-mode
   :ensure t
   :commands pkgbuild-mode

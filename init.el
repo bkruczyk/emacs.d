@@ -118,6 +118,7 @@
 (add-to-list 'custom-theme-load-path
              (concat (file-name-as-directory user-emacs-directory) "themes"))
 
+(setq badwolf-diff-hl-inverse t)
 (load-theme 'badwolf t)
 
 ;; disable startup screen
@@ -275,6 +276,8 @@
   :ensure evil-smartparens
   :init
   (evil-mode +1)
+  ;; needed to eval after closing paren in normal mode
+  (setq evil-move-beyond-eol t)
   (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
 
 (use-package pkgbuild-mode
@@ -391,7 +394,7 @@
   :commands magit-status
   :init
   (bind-key "C-x g" 'magit-status)
-  (global-git-commit-mode +1)
+  ;; (global-git-commit-mode +1)
   :config
   (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
 
@@ -467,6 +470,8 @@
   :commands cider-mode
   :config
   (setq nrepl-log-messages t)
+  (setq cider-cljs-lein-repl
+        "(do (require 'figwheel-sidecar.repl-api) (figwheel-sidecar.repl-api/start-figwheel!) (figwheel-sidecar.repl-api/cljs-repl))")
   (add-hook 'cider-mode-hook #'lisp-defaults))
 
 (use-package haskell-mode

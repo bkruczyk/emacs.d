@@ -167,6 +167,9 @@
 
 ;;; keybindings
 
+(global-set-key (kbd "C-h") 'delete-backward-char)
+(global-set-key (kbd "C-c h") 'help-command)
+
 ;; Font size
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
@@ -340,8 +343,8 @@
   :ensure t
   :commands discover-my-major discover-my-mode
   :init
-  (bind-key "C-h M-m" 'discover-my-major)
-  (bind-key "C-h M-M" 'discover-my-mode))
+  (bind-key "C-c C-h M-m" 'discover-my-major)
+  (bind-key "C-c C-h M-M" 'discover-my-mode))
 
 (use-package volatile-highlights
   :ensure t

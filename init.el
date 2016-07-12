@@ -397,7 +397,7 @@
   :commands magit-status
   :init
   (bind-key "C-x g" 'magit-status)
-  ;; (global-git-commit-mode +1)
+  (global-git-commit-mode +1)
   :config
   (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
 

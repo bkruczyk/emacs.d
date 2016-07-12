@@ -157,7 +157,7 @@
 ;; (column-number-mode t)
 ;; (size-indication-mode t)
 
-(setq linum-format " %d ")
+(setq linum-format " %i ")
 
 ;; display key strokes faster
 (setq echo-keystrokes 0.1)

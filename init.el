@@ -47,7 +47,7 @@
 (setq frame-title-format
       '("" (:eval (if (buffer-file-name)
                       (abbreviate-file-name (buffer-file-name)) "%b"))
-        " ★ " invocation-name))
+        " @ " invocation-name))
 
 ;; supress ad-redefinition messages
 (setq ad-redefinition-action 'accept)

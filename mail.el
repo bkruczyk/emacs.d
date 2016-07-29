@@ -1,4 +1,6 @@
-(setq message-directory "~/.mail")
+(setq message-directory "~/.mail"
+      message-auto-save-directory "~/tmp"
+      message-kill-buffer-on-exit t)
 
 (setq user-mail-address "bartlomiej.kruczyk@gmail.com"
       user-full-name "Bartłomiej Kruczyk")

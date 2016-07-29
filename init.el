@@ -59,8 +59,6 @@
 (setq vc-follow-symlinks t)
 
 ;;; mail
-
-(setq message-kill-buffer-on-exit t)
 (load "~/.emacs.d/mail.el")
 
 ;;; editing
@@ -264,28 +262,31 @@
         (append '(("PKGBUILD$" . pkgbuild-mode)) auto-mode-alist)))
 
 (use-package notmuch
-  :ensure t
   :commands notmuch
   :init
   (bind-key "C-c m" 'notmuch)
   :config
+  (setq-default notmuch-show-indent-content nil)
   (setq notmuch-search-oldest-first nil)
-  ;;(setq notmuch-fcc-dirs "sent")
+  (setq notmuch-fcc-dirs "Sent")
+  (setq notmuch-archive-tags '("-inbox" "+archive"))
   (bind-key "a"
             (lambda ()
-              "toggle archive"
+              "archive message"
               (interactive)
-              (if (member "archive" (notmuch-search-get-tags))
-                  (notmuch-search-tag '("-archive" "+inbox"))
-                (notmuch-search-tag '("+archive" "-inbox" "-unread"))))
+              (notmuch-search-tag '("+archive" "-inbox" "-unread" "-trash")))
             notmuch-search-mode-map)
+  (bind-key  "i"
+             (lambda ()
+               "inbox message"
+               (interactive)
+               (notmuch-search-tag '("+inbox" "-trash" "-unread" "-archive")))
+             notmuch-search-mode-map)
   (bind-key  "d"
              (lambda ()
-               "toggle trash"
+               "trash message"
                (interactive)
-               (if (member "trash" (notmuch-search-get-tags))
-                   (notmuch-search-tag '("-trash" "+inbox"))
-                 (notmuch-search-tag '("+trash" "-inbox" "-unread" "-archive"))))
+               (notmuch-search-tag '("+trash" "-inbox" "-unread" "-archive")))
              notmuch-search-mode-map))
 
 (use-package smart-mode-line

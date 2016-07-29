@@ -27,7 +27,9 @@
   :commands smex smex-major-mode-commands
   :init
   (bind-key "M-x" 'smex)
-  (bind-key "M-X" 'smex-major-mode-commands))
+  (bind-key "M-X" 'smex-major-mode-commands)
+  (bind-key "C-x M-m" 'smex)
+  (bind-key "C-x M-M" 'smex-major-mode-commands))
 
 (use-package ido-vertical-mode
   :ensure t

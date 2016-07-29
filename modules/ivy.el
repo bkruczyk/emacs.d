@@ -8,4 +8,5 @@
   :config
   (bind-key "C-s" 'swiper)
   (bind-key "C-c C-r" 'ivy-resume)
-  (bind-key "M-x" 'counsel-M-x))
+  (bind-key "M-x" 'counsel-M-x)
+  (bind-key "C-x M-m" 'counsel-M-x))

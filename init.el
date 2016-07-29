@@ -122,10 +122,6 @@
 (add-to-list 'custom-theme-load-path
              (concat (file-name-as-directory user-emacs-directory) "themes"))
 
-(setq badwolf-diff-hl-inverse t)
-(setq badwolf-keywords-nobold t)
-(load-theme 'badwolf t)
-
 ;; disable startup screen
 (setq inhibit-startup-screen t)
 

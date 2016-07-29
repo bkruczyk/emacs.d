@@ -28,7 +28,10 @@
 ;; enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Always load newest byte code
+;; focus on help window
+(setq help-window-select t)
+
+;; always load newest byte code
 (setq load-prefer-newer t)
 
 ;; reduce the frequency of garbage collection by making it happen on

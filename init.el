@@ -114,6 +114,9 @@
 
 ;;; ux
 
+;; show matching parentheses
+(show-paren-mode +1)
+
 ;; do not use .Xresources or .Xdefaults
 (setq inhibit-x-resources t)
 
@@ -122,6 +125,7 @@
              (concat (file-name-as-directory user-emacs-directory) "themes"))
 
 (setq badwolf-diff-hl-inverse t)
+(setq badwolf-keywords-nobold t)
 (load-theme 'badwolf t)
 
 ;; disable startup screen
@@ -205,28 +209,18 @@
 
 ;; builtins
 (use-package recentf
-  ;; :commands recentf-ido
-  :commands ivy-recentf
+  :commands recentf
   :init
-  ;; (bind-key "C-x F" 'recentf-ido)
-  (bind-key "C-x F" 'ivy-recentf-load)
+  (defvar recentf-run #'recentf-open-files "Function to run recentf with.")
+  (bind-key "C-x F"
+            (lambda ()
+              (interactive)
+              (require 'recentf)
+              (funcall recentf-run)))
   :config
   (recentf-mode +1)
   (setq recentf-max-saved-items 100
         recentf-max-menu-items 5))
-
-(defun ivy-recentf-load ()
-    "Load recentf and run ivy-recentf."
-  (interactive)
-  (require 'recentf)
-  (ivy-recentf))
-
-;; (defun recentf-ido ()
-;;   "Run recentf with ido completion."
-;;   (interactive)
-;;   (require 'recentf)
-;;   (let ((file (ido-completing-read "Pick recent file: " recentf-list nil )))
-;;     (when file (find-file file))))
 
 (use-package org
   :commands org-mode
@@ -250,41 +244,17 @@
   :config
   (setq reb-re-syntax 'string))
 
-;; ;; TODO?: ido autoload
-;; (use-package ido
-;;   :config
-;;   (ido-mode +1)
-;;   (ido-everywhere +1)
-;;   (setq ido-enable-prefix nil
-;;         ido-enable-flex-matching t
-;;         ido-create-new-buffer 'always
-;;         ido-use-filename-at-point 'guess
-;;         ido-max-prospects 10
-;;         ido-auto-merge-work-directories-length -1
-;;         ido-default-file-method 'selected-window))
-
 ;; gnu and melpa packages
-
-(use-package ivy
-  :ensure t
-  :ensure swiper
-  :ensure counsel
-  :init
-  (ivy-mode +1)
-  :config
-  (bind-key "C-s" 'swiper)
-  (bind-key "C-c C-r" 'ivy-resume)
-  (bind-key "M-x" 'counsel-M-x))
 
 (use-package evil
   :ensure t
   :ensure evil-org
-  :ensure evil-smartparens
+  :ensure evil-paredit
   :init
   (evil-mode +1)
   ;; needed to eval after closing paren in normal mode
   (setq evil-move-beyond-eol t)
-  (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
+  (add-hook 'paradox-mode-hook #'evil-paredit-mode))
 
 (use-package pkgbuild-mode
   :ensure t
@@ -332,16 +302,6 @@
   (setq paradox-execute-asynchronously t)
   (setq paradox-automatically-star t))
 
-;; (use-package anzu
-;;   :ensure t
-;;   :config
-;;   (global-anzu-mode +1)
-;;   (bind-key "M-%" 'anzu-query-replace)
-;;   (bind-key "C-M-%" 'anzu-query-replace-regexp)
-;;   (bind-key "C-. M-%" 'anzu-query-replace-at-cursor)
-;;   (bind-key "C-c C-. M-%" 'anzu-query-replace-at-cursor-thing)
-;;   :diminish anzu-mode)
-
 (use-package discover-my-major
   :ensure t
   :commands discover-my-major discover-my-mode
@@ -368,39 +328,13 @@
   :ensure t
   :commands rainbow-mode)
 
-;; ;; ido et al
-;; (use-package ido-ubiquitous
-;;   :ensure t
-;;   :config
-;;   (ido-ubiquitous-mode +1))
-
-;; (use-package flx-ido
-;;   :ensure t
-;;   :config
-;;   (setq ido-enable-flex-matching t)
-;;   (setq ido-use-faces t)
-;;   (flx-ido-mode +1))
-
-;; (use-package smex
-;;   :ensure t
-;;   :commands smex smex-major-mode-commands
-;;   :init
-;;   (bind-key "M-x" 'smex)
-;;   (bind-key "M-X" 'smex-major-mode-commands))
-
-;; (use-package ido-vertical-mode
-;;   :ensure t
-;;   :config
-;;   (ido-vertical-mode +1))
-
-;; vc
 (use-package magit
   :ensure t
   :ensure magit-gh-pulls
   :commands magit-status
   :init
   (bind-key "C-x g" 'magit-status)
-  (global-git-commit-mode +1)
+  (add-to-list 'auto-mode-alist '("COMMIT_EDITMSG\\'" . global-git-commit-mode))
   :config
   (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
 
@@ -416,19 +350,21 @@
   (global-diff-hl-mode +1)
   (diff-hl-margin-mode))
 
-(use-package smartparens
-  :ensure t
-  :commands smartparens-mode smartparens-strict-mode
-  :config
-  (require 'smartparens-config)
-  (setq sp-base-key-bindings 'paredit
-        sp-autoskip-closing-pair 'always
-        sp-show-pair-delay 0)
-  (sp-use-paredit-bindings))
-
 (use-package rainbow-delimiters
   :ensure t
   :commands rainbow-delimiters-mode)
+
+(use-package prog-mode
+  :ensure paredit
+  :ensure rainbow-delimiters
+  :init
+  (add-hook 'prog-mode-hook (lambda () (whitespace-mode +1)))
+  (add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (subword-mode +1)
+            (eldoc-mode +1)
+            (paredit-mode +1)
+            (rainbow-delimiters-mode +1))))
 
 (use-package company
   :ensure t
@@ -440,133 +376,36 @@
   (setq company-idle-delay 0.5)
   (setq company-tooltip-limit 10)
   (setq company-minimum-prefix-length 2)
-  (setq company-tooltip-flip-when-above t)
-  :diminish company-mode)
+  (setq company-tooltip-flip-when-above t))
 
 (use-package flycheck
   :ensure t
   :commands flycheck-mode
+  :init
+  (add-hook 'prog-mode-hook (lambda () (flycheck-mode +1)))
   :config
   (setq flycheck-indication-mode nil))
 
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (show-smartparens-mode +1)
-            (smartparens-mode +1)
-            (flycheck-mode +1)))
+(defun module-load (name)
+  "Load a module NAME."
+  (load (concat (file-name-as-directory user-emacs-directory) "modules/" name ".el")))
 
-(defun lisp-defaults ()
-  "Enable modes useful for Lisp programming."
-  (whitespace-mode +1)
-  (subword-mode +1)
-  (eldoc-mode +1)
-  (smartparens-strict-mode +1)
-  (rainbow-delimiters-mode +1))
+(module-load "ruby")
+(module-load "clojure")
+(module-load "haskell")
+(module-load "python")
+(module-load "js")
+(module-load "web")
+(module-load "ivy")
+;; (module-load "anzu")
+;; (module-load "ido")
+(module-load "hl7")
 
-(add-hook 'emacs-lisp-mode-hook #'lisp-defaults)
-
-(use-package clojure-mode
-  :ensure t
-  :commands clojure-mode
-  :config
-  (add-hook 'clojure-mode-hook #'lisp-defaults))
-
-(use-package cider
-  :ensure t
-  :commands cider-mode
-  :config
-  (setq nrepl-log-messages t)
-  (setq cider-cljs-lein-repl
-        "(do (require 'figwheel-sidecar.repl-api) (figwheel-sidecar.repl-api/start-figwheel!) (figwheel-sidecar.repl-api/cljs-repl))")
-  (add-hook 'cider-mode-hook #'lisp-defaults))
-
-(use-package haskell-mode
-  :ensure t
-  :commands haskell-mode
-  :config
-  (add-hook 'haskell-mode-hook
-            (lambda ()
-              (whitespace-mode +1)
-              (subword-mode +1)
-              (haskell-doc-mode +1)
-              (haskell-indentation-mode +1)
-              (interactive-haskell-mode +1))))
-
-(use-package web-mode
-  :ensure t
-  :commands web-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.?html\\'" . web-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-  )
-
-(use-package js2-mode
-  :ensure t
-  :commands js2-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.js\\'"    . js2-mode))
-  (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
-  :config
-  (add-hook 'js2-mode-hook (lambda ()
-                             (whitespace-mode +1)
-                             (subword-mode +1)
-                             (setq-local electric-layout-rules '((?\; . after))))))
-
-(use-package json-mode
-  :ensure t
-  :commands json-mode)
-
-;; ;; ruby
-;; (use-package inf-ruby
-;;   :ensure t
-;;   :commands (inf-ruby inf-ruby-mode))
-;; (use-package ruby-tools
-;;   :ensure t
-;;   :commands ruby-tools-mode)
-;; (use-package ruby-mode
-;;   :ensure t
-;;   :commands ruby-mode
-;;   :config
-;;   (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
-;;   (add-to-list 'auto-mode-alist '("Rakefile\\'" . ruby-mode))
-;;   (add-to-list 'auto-mode-alist '("Gemfile\\'" . ruby-mode))
-;;   (add-to-list 'auto-mode-alist '("Guardfile\\'" . ruby-mode))
-;;   (add-hook 'ruby-mode-hook (lambda ()
-;;                               (whitespace-mode +1)
-;;                               (subword-mode +1)
-;;                               (inf-ruby-minor-mode +1)
-;;                               (ruby-tools-mode +1))))
-
-;; ;; python
-;; (use-package python
-;;   :commands python-mode
-;;   :ensure anaconda-mode
-;;   :ensure company
-;;   :ensure company-anaconda
-;;   :config
-;;   (add-to-list 'company-backends 'company-anaconda)
-;;   (add-hook 'python-mode-hook
-;;             (lambda ()
-;;               (whitespace-mode +1)
-;;               (anaconda-mode +1)
-;;               (eldoc-mode +1))))
-
-(use-package yaml-mode
-  :ensure t
-  :commands yaml-mode)
-
-(use-package nxml-mode
-  :commands nxml-mode
-  :config
-  (setq nxml-bind-meta-tab-to-complete-flag t)
-  (setq nxml-slash-auto-complete-flag t)
-  (add-to-list 'auto-mode-alist '("\\.pom$" . nxml-mode)))
-
-;; custom
-(use-package misc
+(use-package custom
   :config
   (setq custom-file (concat (file-name-as-directory user-emacs-directory) "custom.el"))
+  (defvar secrets-file (concat (file-name-as-directory user-emacs-directory) "secrets.el"))
   (load custom-file 'no-error 'no-message)
-  (load (concat (file-name-as-directory user-emacs-directory) "secret.el") 'no-error 'no-message))
+  (load secrets-file 'no-error 'no-message))
 
 ;;; init.el ends here

@@ -137,9 +137,6 @@
 ;; the blinking cursor is nothing, but an annoyance
 (blink-cursor-mode -1)
 
-;; highlight the current line
-(global-hl-line-mode +1)
-
 ;; history-rewind for window layouts, C-c + right/left arrow key
 (winner-mode +1)
 

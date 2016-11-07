@@ -48,9 +48,8 @@
 ;; more useful frame title, that show either a file or a
 ;; buffer name (if the buffer isn't visiting a file)
 (setq frame-title-format
-      '("" (:eval (if (buffer-file-name)
-                      (abbreviate-file-name (buffer-file-name)) "%b"))
-        " @ " invocation-name))
+      '((:eval (if (buffer-file-name)
+                   (abbreviate-file-name (buffer-file-name)) "%b"))))
 
 ;; supress ad-redefinition messages
 (setq ad-redefinition-action 'accept)

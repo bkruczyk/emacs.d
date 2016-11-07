@@ -151,9 +151,9 @@
       mouse-wheel-scroll-amount '(2 ((shift) . 10)))
 
 ;; mode line settings
-;; (line-number-mode t)
-;; (column-number-mode t)
-;; (size-indication-mode t)
+(line-number-mode t)
+(column-number-mode t)
+(size-indication-mode t)
 
 (setq linum-format " %i ")
 
@@ -281,13 +281,6 @@
                (interactive)
                (notmuch-search-tag '("+trash" "-inbox" "-unread" "-archive")))
              notmuch-search-mode-map))
-
-(use-package smart-mode-line
-  :ensure t
-  :init
-  (setq sml/no-confirm-load-theme t)
-  (setq sml/theme 'respectful)
-  (sml/setup))
 
 (use-package paradox
   :ensure t

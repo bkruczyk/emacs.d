@@ -126,9 +126,8 @@
 ;; do not use .Xresources or .Xdefaults
 (setq inhibit-x-resources t)
 
-;; set load path for custom themes
-(add-to-list 'custom-theme-load-path
-             (concat (file-name-as-directory user-emacs-directory) "themes"))
+;; set custom themes directory
+(setq custom-theme-directory "~/.emacs.d/themes")
 
 ;; disable startup screen
 (setq inhibit-startup-screen t)

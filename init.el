@@ -60,6 +60,15 @@
 ;;; mail
 (load "~/.emacs.d/mail.el")
 
+(setq message-directory "~/.mail"
+      message-auto-save-directory "~/tmp/mail"
+      message-kill-buffer-on-exit t
+      message-forward-as-mime nil
+      user-full-name "Bartłomiej Kruczyk"
+      message-signature "z poważaniem,\nBartłomiej Kruczyk")
+
+(turn-on-gnus-dired-mode)
+
 ;;; editing
 
 (setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
@@ -261,7 +270,7 @@
   :config
   (setq-default notmuch-show-indent-content nil)
   (setq notmuch-search-oldest-first nil)
-  (setq notmuch-fcc-dirs "Sent")
+  (setq notmuch-fcc-dirs "Archive")
   (setq notmuch-archive-tags '("-inbox" "+archive"))
   (bind-key "a"
             (lambda ()

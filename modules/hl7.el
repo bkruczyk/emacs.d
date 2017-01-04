@@ -1,4 +1,4 @@
-(use-package hl7
+(use-package hl7-mode
   :load-path "site-lisp/"
   :commands hl7-mode
   :init

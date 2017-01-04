@@ -58,8 +58,6 @@
 (setq vc-follow-symlinks t)
 
 ;;; mail
-(load "~/.emacs.d/mail.el")
-
 (setq message-directory "~/.mail"
       message-auto-save-directory "~/tmp/mail"
       message-kill-buffer-on-exit t
@@ -67,6 +65,9 @@
       user-full-name "Bartłomiej Kruczyk"
       message-signature "z poważaniem,\nBartłomiej Kruczyk")
 
+
+;; dired
+(setq dired-dwim-target t)
 (turn-on-gnus-dired-mode)
 
 ;;; editing
@@ -129,6 +130,14 @@
 ;; set custom themes directory
 (setq custom-theme-directory "~/.emacs.d/themes")
 
+(defun reload-theme ()
+  "Reload current theme."
+  (interactive)
+  (load-theme (car custom-enabled-themes) t))
+
+;; reload current theme
+(global-set-key (kbd "C-x M-t") 'reload-theme)
+
 ;; disable startup screen
 (setq inhibit-startup-screen t)
 
@@ -156,6 +165,9 @@
       scroll-preserve-screen-position 1)
 (setq mouse-wheel-progressive-speed nil
       mouse-wheel-scroll-amount '(2 ((shift) . 10)))
+
+;; let mouse avoid cursor
+(mouse-avoidance-mode 'banish)
 
 ;; mode line settings
 (line-number-mode t)
@@ -244,17 +256,6 @@
 
 ;; gnu and melpa packages
 
-(use-package evil
-  :ensure t
-  :ensure evil-org
-  :ensure evil-paredit
-  :init
-  (evil-mode +1)
-  ;; needed to eval after closing paren in normal mode
-  (setq evil-move-beyond-eol t)
-  (setq evil-disable-insert-state-bindings t)
-  (add-hook 'paradox-mode-hook #'evil-paredit-mode))
-
 (use-package pkgbuild-mode
   :ensure t
   :commands pkgbuild-mode
@@ -269,7 +270,7 @@
   :config
   (setq-default notmuch-show-indent-content nil)
   (setq notmuch-search-oldest-first nil)
-  (setq notmuch-fcc-dirs "Archive")
+  (setq notmuch-fcc-dirs "Archive -unread")
   (setq notmuch-archive-tags '("-inbox" "+archive"))
   (bind-key "a"
             (lambda ()
@@ -353,13 +354,12 @@
   :ensure paredit
   :ensure rainbow-delimiters
   :init
-  (add-hook 'prog-mode-hook (lambda () (whitespace-mode +1)))
-  (add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (subword-mode +1)
-            (eldoc-mode +1)
-            (paredit-mode +1)
-            (rainbow-delimiters-mode +1))))
+  (add-hook 'prog-mode-hook (lambda ()
+                              (paredit-mode +1)
+                              (subword-mode +1)
+                              (eldoc-mode +1)
+                              (rainbow-delimiters-mode +1)
+                              (whitespace-mode +1))))
 
 (use-package company
   :ensure t
@@ -392,9 +392,10 @@
 (module-load "js")
 (module-load "web")
 (module-load "ivy")
-;; (module-load "anzu")
-;; (module-load "ido")
+(module-load "anzu")
 (module-load "hl7")
+;; (module-load "ido")
+;; (module-load "evil")
 
 (use-package custom
   :config

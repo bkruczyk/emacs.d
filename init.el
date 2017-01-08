@@ -400,8 +400,6 @@
 (use-package custom
   :config
   (setq custom-file (concat (file-name-as-directory user-emacs-directory) "custom.el"))
-  (defvar secrets-file (concat (file-name-as-directory user-emacs-directory) "secrets.el"))
-  (load custom-file 'no-error 'no-message)
-  (load secrets-file 'no-error 'no-message))
+  (load custom-file 'no-error 'no-message))
 
 ;;; init.el ends here

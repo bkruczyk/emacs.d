@@ -166,9 +166,6 @@
 (setq mouse-wheel-progressive-speed nil
       mouse-wheel-scroll-amount '(2 ((shift) . 10)))
 
-;; let mouse avoid cursor
-(mouse-avoidance-mode 'banish)
-
 ;; mode line settings
 (line-number-mode t)
 (column-number-mode t)

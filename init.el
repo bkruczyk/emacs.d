@@ -163,7 +163,8 @@
 ;; nice scrolling
 (setq scroll-margin 0
       scroll-conservatively 100000
-      scroll-preserve-screen-position 1)
+      scroll-preserve-screen-position 1
+      fast-but-imprecise-scrolling t)
 (setq mouse-wheel-progressive-speed nil
       mouse-wheel-scroll-amount '(2 ((shift) . 10)))
 

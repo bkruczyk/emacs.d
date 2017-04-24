@@ -350,11 +350,12 @@
   :ensure rainbow-delimiters
   :init
   (add-hook 'prog-mode-hook (lambda ()
-                              (paredit-mode +1)
                               (subword-mode +1)
                               (eldoc-mode +1)
+                              (whitespace-mode +1)))
+  (add-hook 'lisp-mode-hook (lambda ()
                               (rainbow-delimiters-mode +1)
-                              (whitespace-mode +1))))
+                              (paredit-mode +1))))
 
 (use-package company
   :ensure t

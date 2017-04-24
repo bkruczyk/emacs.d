@@ -323,13 +323,10 @@
 
 (use-package magit
   :ensure t
-  :ensure magit-gh-pulls
   :commands magit-status
   :init
   (bind-key "C-x g" 'magit-status)
-  (add-to-list 'auto-mode-alist '("COMMIT_EDITMSG\\'" . global-git-commit-mode))
-  :config
-  (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
+  (add-to-list 'auto-mode-alist '("COMMIT_EDITMSG\\'" . global-git-commit-mode)))
 
 (use-package git-timemachine :ensure t)
 (use-package gitconfig-mode :ensure t)

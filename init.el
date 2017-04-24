@@ -63,6 +63,7 @@
       message-kill-buffer-on-exit t
       message-forward-as-mime nil
       user-full-name "Bartłomiej Kruczyk"
+      message-forward-ignored-headers "^Return-Path\\|^Delivered-To\\|^Received\\|^X-.*\\|^References\\|^In-Reply-To\\|^Message-ID\\|^Thread-Index\\|^Content-Language"
       message-signature "z poważaniem,\nBartłomiej Kruczyk")
 
 

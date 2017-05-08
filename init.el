@@ -238,7 +238,7 @@
   (bind-key "C-c c" 'org-capture)
   :config
   (setq org-log-done t)
-  (setq org-directory "~/code/org")
+  (setq org-directory "~/Dropbox/org")
   (setq org-default-notes-file
         (concat org-directory "/notes.org")))
 

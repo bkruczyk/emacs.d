@@ -355,8 +355,11 @@
                               (eldoc-mode +1)
                               (whitespace-mode +1)))
   (add-hook 'lisp-mode-hook (lambda ()
+                              (run-hooks 'prog-mode-hook)
                               (rainbow-delimiters-mode +1)
-                              (paredit-mode +1))))
+                              (paredit-mode +1)))
+  (add-hook 'emacs-lisp-mode-hook (lambda ()
+                                    (run-hooks 'lisp-mode-hook))))
 
 (use-package company
   :ensure t

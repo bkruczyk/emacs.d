@@ -245,6 +245,7 @@
   (bind-key "C-c c" 'org-capture)
   :config
   (setq org-log-done t)
+  (setq org-ellipsis "⤵")
   (setq org-directory "~/Dropbox/org")
   (setq org-default-notes-file
         (concat org-directory "/notes.org")))
@@ -349,22 +350,30 @@
   (global-diff-hl-mode +1)
   (diff-hl-margin-mode))
 
-(use-package rainbow-delimiters
+;; (use-package rainbow-delimiters
+;;   :ensure t
+;;   :commands rainbow-delimiters-mode)
+
+(use-package parinfer
   :ensure t
-  :commands rainbow-delimiters-mode)
+  :bind (("C-," . parinfer-toggle-mode))
+  :init
+  (progn
+    (setq parinfer-extensions
+          '(defaults pretty-parens smart-tab smart-yank))
+    (add-hook 'lisp-mode-hook #'parinfer-mode)
+    (add-hook 'clojure-mode-hook #'parinfer-mode)))
 
 (use-package prog-mode
-  :ensure paredit
-  :ensure rainbow-delimiters
   :init
   (add-hook 'prog-mode-hook (lambda ()
                               (subword-mode +1)
                               (eldoc-mode +1)
-                              (whitespace-mode +1)))
+                              (diminish 'eldoc-mode)
+                              (whitespace-mode +1)
+                              (diminish 'whitespace-mode)))
   (add-hook 'lisp-mode-hook (lambda ()
-                              (run-hooks 'prog-mode-hook)
-                              (rainbow-delimiters-mode +1)
-                              (paredit-mode +1)))
+                              (run-hooks 'prog-mode-hook)))
   (add-hook 'emacs-lisp-mode-hook (lambda ()
                                     (run-hooks 'lisp-mode-hook))))
 

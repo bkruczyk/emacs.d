@@ -2,8 +2,10 @@
   :ensure t
   :ensure swiper
   :ensure counsel
+  :ensure diminish
   :init
   (ivy-mode +1)
+  (diminish 'ivy-mode)
   (setq recentf-run #'ivy-recentf)
   :config
   ;; (bind-key "C-s" 'swiper)

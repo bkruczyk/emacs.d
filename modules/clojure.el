@@ -1,14 +1,7 @@
-(defun my-clojure-hook ()
- (whitespace-mode +1)
- (subword-mode +1)
- (eldoc-mode +1)
- (paredit-mode +1)
- (rainbow-delimiters-mode +1))
+(defun my-clojure-hook ())
 
 (use-package clojure-mode
   :ensure t
-  :ensure paredit
-  :ensure rainbow-delimiters
   :commands clojure-mode
   :config
   (add-hook 'clojure-mode-hook #'my-clojure-hook))
@@ -19,6 +12,7 @@
   :ensure rainbow-delimiters
   :commands cider-mode
   :config
+  (setq cider-lein-parameters "repl :headless :host localhost")
   (setq nrepl-log-messages t)
   (setq cider-cljs-lein-repl
         "(do (require 'figwheel-sidecar.repl-api) (figwheel-sidecar.repl-api/start-figwheel!) (figwheel-sidecar.repl-api/cljs-repl))")

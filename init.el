@@ -238,6 +238,13 @@
   (setq recentf-max-saved-items 100
         recentf-max-menu-items 5))
 
+(use-package viper
+  :bind
+  (("M-f" . viper-forward-word)
+   ("M-b" . viper-backward-word)
+   ("M-h" . viper-delete-backward-word)
+   ("C-x M-h" . mark-paragraph)))
+
 (use-package org
   :commands org-mode
   :init

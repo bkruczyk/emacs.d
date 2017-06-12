@@ -57,19 +57,19 @@
 ;; follow symlinks
 (setq vc-follow-symlinks t)
 
-;;; mail
+;; dired
+(setq dired-dwim-target t)
+(turn-on-gnus-dired-mode)
+
+;;; message
 (setq message-directory "~/.mail"
       message-auto-save-directory "~/tmp/mail"
       message-kill-buffer-on-exit t
       message-forward-as-mime nil
-      user-full-name "Bartłomiej Kruczyk"
-      message-forward-ignored-headers "^Return-Path\\|^Delivered-To\\|^Received\\|^X-.*\\|^References\\|^In-Reply-To\\|^Message-ID\\|^Thread-Index\\|^Content-Language"
-      message-signature "z poważaniem,\nBartłomiej Kruczyk")
+      message-forward-ignored-headers "^Return-Path\\|^Delivered-To\\|^Received\\|^X-.*\\|^References\\|^In-Reply-To\\|^Message-ID\\|^Thread-Index\\|^Content-Language")
 
-
-;; dired
-(setq dired-dwim-target t)
-(turn-on-gnus-dired-mode)
+;; specific mail server and signature configuration
+(load-file (concat user-emacs-directory "mail.el"))
 
 ;;; editing
 
@@ -238,11 +238,23 @@
   (setq recentf-max-saved-items 100
         recentf-max-menu-items 5))
 
-(use-package viper
+(use-package evil
+  :ensure t
+  :init
+  (defun evil-delete-forward-word ()
+    "Delete next word."
+    (interactive)
+    (delete-region (max
+                     (save-excursion
+                      (evil-forward-word-begin)
+                      (point))
+                     (line-beginning-position))
+                   (point)))
   :bind
-  (("M-f" . viper-forward-word)
-   ("M-b" . viper-backward-word)
-   ("M-h" . viper-delete-backward-word)
+  (("M-f" . evil-forward-word-begin)
+   ("M-b" . evil-backward-word-begin)
+   ("M-d" . evil-delete-forward-word)
+   ("M-h" . evil-delete-backward-word)
    ("C-x M-h" . mark-paragraph)))
 
 (use-package org
@@ -280,6 +292,13 @@
 (use-package neotree
   :ensure t
   :bind ("<f8>" . neotree))
+
+(use-package projectile
+  :ensure t
+  :ensure counsel-projectile
+  :commands projectile
+  :config
+  (counsel-projectile-on))
 
 (use-package notmuch
   :commands notmuch
@@ -326,8 +345,7 @@
 (use-package volatile-highlights
   :ensure t
   :config
-  (volatile-highlights-mode +1)
-  :diminish volatile-highlights-mode)
+  (volatile-highlights-mode +1))
 
 (use-package zop-to-char :ensure t)
 
@@ -380,9 +398,7 @@
   (add-hook 'prog-mode-hook (lambda ()
                               (subword-mode +1)
                               (eldoc-mode +1)
-                              (diminish 'eldoc-mode)
-                              (whitespace-mode +1)
-                              (diminish 'whitespace-mode)))
+                              (whitespace-mode +1)))
   (add-hook 'lisp-mode-hook (lambda ()
                               (run-hooks 'prog-mode-hook)))
   (add-hook 'emacs-lisp-mode-hook (lambda ()
@@ -408,21 +424,125 @@
   :config
   (setq flycheck-indication-mode nil))
 
-(defun module-load (name)
-  "Load a module NAME."
-  (load (concat (file-name-as-directory user-emacs-directory) "modules/" name ".el")))
+;; (use-package inf-ruby
+;;   :ensure t
+;;   :commands (inf-ruby inf-ruby-mode))
 
-(module-load "ruby")
-(module-load "clojure")
-(module-load "haskell")
-(module-load "python")
-(module-load "js")
-(module-load "web")
-(module-load "ivy")
-(module-load "anzu")
-(module-load "hl7")
-;; (module-load "ido")
-;; (module-load "evil")
+;; (use-package ruby-tools
+;;   :ensure t
+;;   :commands ruby-tools-mode)
+
+;; (use-package ruby-mode
+;;   :ensure t
+;;   :commands ruby-mode
+;;   :config
+;;   (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
+;;   (add-to-list 'auto-mode-alist '("Rakefile\\'" . ruby-mode))
+;;   (add-to-list 'auto-mode-alist '("Gemfile\\'" . ruby-mode))
+;;   (add-to-list 'auto-mode-alist '("Guardfile\\'" . ruby-mode))
+;;   (add-hook 'ruby-mode-hook (lambda ()
+;;                               (subword-mode +1)
+;;                               (inf-ruby-minor-mode +1)
+;;                               (ruby-tools-mode +1))))
+
+(use-package clojure-mode
+  :ensure t
+  :commands clojure-mode)
+
+(use-package cider
+  :ensure t
+  :commands cider-mode
+  :config
+  (setq cider-lein-parameters "repl :headless :host localhost")
+  (setq nrepl-log-messages t)
+  (setq cider-cljs-lein-repl
+        "(do (require 'figwheel-sidecar.repl-api) (figwheel-sidecar.repl-api/start-figwheel!) (figwheel-sidecar.repl-api/cljs-repl))"))
+
+(use-package haskell-mode
+  :ensure t
+  :commands haskell-mode
+  :config
+  (add-hook 'haskell-mode-hook
+            (lambda ()
+              (whitespace-mode +1)
+              (subword-mode +1)
+              (haskell-doc-mode +1)
+              (haskell-indentation-mode +1)
+              (interactive-haskell-mode +1))))
+
+;; (use-package python
+;;   :commands python-mode
+;;   :ensure anaconda-mode
+;;   :ensure company
+;;   :ensure company-anaconda
+;;   :config
+;;   (add-to-list 'company-backends 'company-anaconda)
+;;   (add-hook 'python-mode-hook
+;;             (lambda ()
+;;               (whitespace-mode +1)
+;;               (anaconda-mode +1)
+;;               (eldoc-mode +1))))
+
+(use-package hl7-mode
+  :load-path "site-lisp/"
+  :commands hl7-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.hl7\\'" . hl7-mode)))
+
+(use-package js2-mode
+  :ensure t
+  :commands js2-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.js\\'"    . js2-mode))
+  (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+  :config
+  (add-hook 'js2-mode-hook (lambda ()
+                             (whitespace-mode +1)
+                             (subword-mode +1)
+                             (setq-local electric-layout-rules '((?\; . after))))))
+
+(use-package json-mode
+  :ensure t
+  :commands json-mode)
+
+(use-package web-mode
+  :ensure t
+  :commands web-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.?html\\'" . web-mode)))
+
+(use-package yaml-mode
+  :ensure t
+  :commands yaml-mode)
+
+(use-package nxml-mode
+  :commands nxml-mode
+  :config
+  (setq nxml-bind-meta-tab-to-complete-flag t)
+  (setq nxml-slash-auto-complete-flag t)
+  (add-to-list 'auto-mode-alist '("\\.pom$" . nxml-mode)))
+
+(use-package ivy
+  :ensure t
+  :ensure swiper
+  :ensure counsel
+  :init
+  (ivy-mode +1)
+  (setq recentf-run #'ivy-recentf)
+  :config
+  ;; (bind-key "C-s" 'swiper)
+  (bind-key "C-c C-r" 'ivy-resume)
+  (bind-key "M-x" 'counsel-M-x)
+  (bind-key "C-x M-m" 'counsel-M-x))
+
+(use-package anzu
+  :ensure t
+  :config
+  (global-anzu-mode +1)
+  (bind-key "M-%" 'anzu-query-replace)
+  (bind-key "C-M-%" 'anzu-query-replace-regexp)
+  (bind-key "C-. M-%" 'anzu-query-replace-at-cursor)
+  (bind-key "C-c C-. M-%" 'anzu-query-replace-at-cursor-thing))
 
 (use-package custom
   :config

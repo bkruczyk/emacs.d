@@ -277,6 +277,10 @@
   (setq auto-mode-alist
         (append '(("PKGBUILD$" . pkgbuild-mode)) auto-mode-alist)))
 
+(use-package neotree
+  :ensure t
+  :bind ("<f8>" . neotree))
+
 (use-package notmuch
   :commands notmuch
   :init

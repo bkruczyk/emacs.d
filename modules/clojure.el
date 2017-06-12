@@ -8,8 +8,6 @@
 
 (use-package cider
   :ensure t
-  :ensure paredit
-  :ensure rainbow-delimiters
   :commands cider-mode
   :config
   (setq cider-lein-parameters "repl :headless :host localhost")

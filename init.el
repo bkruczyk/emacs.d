@@ -361,9 +361,9 @@
   (global-diff-hl-mode +1)
   (diff-hl-margin-mode))
 
-;; (use-package rainbow-delimiters
-;;   :ensure t
-;;   :commands rainbow-delimiters-mode)
+(use-package rainbow-delimiters
+  :ensure t
+  :commands rainbow-delimiters-mode)
 
 (use-package parinfer
   :ensure t

@@ -195,6 +195,8 @@
 
 (global-set-key (kbd "M-j") 'top-join-line)
 
+(global-set-key (kbd "M-SPC") 'cycle-spacing)
+
 ;; Font size
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)

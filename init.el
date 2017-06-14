@@ -173,6 +173,8 @@
 (column-number-mode t)
 (size-indication-mode t)
 
+(setq tooltip-use-echo-area t)
+
 (setq linum-format " %i ")
 
 ;; display key strokes faster

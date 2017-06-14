@@ -248,12 +248,14 @@
   (defun evil-delete-forward-word ()
     "Delete next word."
     (interactive)
-    (delete-region (max
-                     (save-excursion
-                      (evil-forward-word-begin)
-                      (point))
-                     (line-beginning-position))
-                   (point)))
+    (if (eolp)
+        (delete-indentation 1)
+      (delete-region (max
+                      (save-excursion
+                       (evil-forward-word-begin)
+                       (point))
+                      (line-beginning-position))
+                     (point))))
   :bind
   (("M-f" . evil-forward-word-begin)
    ("M-b" . evil-backward-word-begin)

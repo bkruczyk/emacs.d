@@ -555,4 +555,59 @@
   (setq custom-file (concat (file-name-as-directory user-emacs-directory) "custom.el"))
   (load custom-file 'no-error 'no-message))
 
+
+;; (require 'all-the-icons)
+;; (setq my/vcs
+;;   (when vc-mode
+;;     (let ((backend (vc-backend buffer-file-name))
+;;           (state   (vc-state buffer-file-name))
+;;           (face    'mode-line-inactive)
+;;           (all-the-icons-scale-factor 1.0)
+;;           (all-the-icons-default-adjust -0.1))
+;;       (concat
+;;               (cond ((memq state '(edited added))
+;;                      (all-the-icons-octicon
+;;                       "git-branch"
+;;                       :face face
+;;                       :height 1.2
+;;                       :v-adjust -0.05))
+;;                     ((eq state 'needs-merge)
+;;                      (setq face font-lock-warning-face)
+;;                      (all-the-icons-octicon "git-merge" :face face))
+;;                     ((eq state 'needs-update)
+;;                      (setq face font-lock-warning-face)
+;;                      (all-the-icons-octicon "arrow-down" :face face))
+;;                     ((memq state '(removed conflict unregistered))
+;;                      (setq face font-lock-warning-face)
+;;                      (all-the-icons-octicon "alert" :face face))
+;;                     (t
+;;                      (setq face 'font-lock-doc-face)
+;;                      (all-the-icons-octicon
+;;                       "git-branch"
+;;                       :face face
+;;                       :height 1.2
+;;                       :v-adjust -0.05)))
+;;               " "
+;;               (propertize (substring vc-mode (+ (if (eq backend 'Hg) 2 3) 2))
+;;                           'face face)
+;;               "  "))))
+
+(setq mode-line-format
+      '("%e"
+        mode-line-front-space
+        mode-line-mule-info
+        mode-line-client
+        mode-line-modified
+        mode-line-remote
+        mode-line-frame-identification
+        mode-line-buffer-identification
+        "   "
+        mode-line-position
+        ;; my/vcs
+        (vc-mode vc-mode)
+        "  "
+        (:propertize "%m" face mode-line-emphasis)
+        mode-line-misc-info
+        mode-line-end-spaces))
+
 ;;; init.el ends here

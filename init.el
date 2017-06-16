@@ -250,7 +250,7 @@
     (interactive)
     (if (eolp)
         (delete-indentation 1)
-      (delete-region (max
+      (delete-region (min
                       (save-excursion
                        (evil-forward-word-begin)
                        (point))

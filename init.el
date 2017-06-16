@@ -297,7 +297,7 @@
 
 (use-package neotree
   :ensure t
-  :bind ("<f8>" . neotree))
+  :bind ("<f8>" . neotree-toggle))
 
 (use-package projectile
   :ensure t

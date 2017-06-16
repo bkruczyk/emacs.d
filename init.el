@@ -254,7 +254,7 @@
                       (save-excursion
                        (evil-forward-word-begin)
                        (point))
-                      (line-beginning-position))
+                      (line-end-position))
                      (point))))
   :bind
   (("M-f" . evil-forward-word-begin)

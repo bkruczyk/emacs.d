@@ -550,11 +550,23 @@
   (bind-key "C-. M-%" 'anzu-query-replace-at-cursor)
   (bind-key "C-c C-. M-%" 'anzu-query-replace-at-cursor-thing))
 
+(use-package doom-themes
+  :ensure t
+  :init
+  (doom-themes-visual-bell-config)
+  (doom-themes-neotree-config))
+
 (use-package custom
   :config
   (setq custom-file (concat (file-name-as-directory user-emacs-directory) "custom.el"))
   (load custom-file 'no-error 'no-message))
 
+(use-package adoc-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.ascii\\'" . adoc-mode))
+  (add-to-list 'auto-mode-alist '("\\.asciidoc\\'" . adoc-mode))
+  (add-to-list 'auto-mode-alist '("\\.adoc\\'" . adoc-mode)))
 
 ;; (require 'all-the-icons)
 ;; (setq my/vcs

@@ -242,26 +242,25 @@
   (setq recentf-max-saved-items 100
         recentf-max-menu-items 5))
 
-(use-package evil
-  :ensure t
+(use-package viper
   :init
-  (defun evil-delete-forward-word ()
-    "Delete next word."
-    (interactive)
-    (if (eolp)
-        (delete-indentation 1)
-      (delete-region (min
-                      (save-excursion
-                       (evil-forward-word-begin)
-                       (point))
-                      (line-end-position))
-                     (point))))
+  ;; (defun viper-delete-forward-word ()
+  ;;   "Delete next word."
+  ;;   (interactive)
+  ;;   (if (eolp)
+  ;;       (delete-indentation 1)
+  ;;     (delete-region (min
+  ;;                     (save-excursion
+  ;;                      (viper-forward-word)
+  ;;                      (point))
+  ;;                     (line-end-position))
+  ;;                    (point))))
   :bind
-  (("M-f" . evil-forward-word-begin)
-   ("M-b" . evil-backward-word-begin)
-   ("M-d" . evil-delete-forward-word)
-   ("M-h" . evil-delete-backward-word)
-   ("C-x M-h" . mark-paragraph)))
+  (("M-f" . viper-forward-word)
+   ("M-b" . viper-backward-word)))
+   ;; ("M-d" . evil-delete-forward-word)
+   ;; ("M-h" . evil-delete-backward-word)
+   ;; ("C-x M-h" . mark-paragraph)))
 
 (use-package org
   :commands org-mode

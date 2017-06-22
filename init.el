@@ -272,7 +272,8 @@
   (setq org-ellipsis "⤵")
   (setq org-directory "~/Dropbox/org")
   (setq org-default-notes-file
-        (concat org-directory "/notes.org")))
+        (concat org-directory "/notes.org"))
+  (set-face-attribute 'org-ellipsis nil :underline nil))
 
 (use-package whitespace
   :commands whitespace-mode

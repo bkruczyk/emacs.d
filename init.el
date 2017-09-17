@@ -122,6 +122,50 @@
 
 ;;; ux
 
+;; selection info from doom-emacs
+(defsubst doom-column (pos)
+  (save-excursion (goto-char pos)
+                  (current-column)))
+
+(defun +doom-selection-info ()
+  "Information about the current selection, such as how many characters and
+lines are selected, or the NxM dimensions of a block selection."
+  (when mark-active
+    (let ((reg-beg (region-beginning))
+          (reg-end (region-end)))
+      (propertize
+       (let ((lines (count-lines reg-beg (min (1+ reg-end) (point-max)))))
+         (cond ((bound-and-true-p rectangle-mark-mode)
+                (let ((cols (abs (- (doom-column reg-end)
+                                    (doom-column reg-beg)))))
+                  (format "(%dx%dB)" lines cols)))
+               ((> lines 1)
+                (format "(%dC %dL)" (- (1+ reg-end) reg-beg) lines))
+               (t
+                (format "(%dC)" (- (1+ reg-end) reg-beg)))))
+       'face 'mode-line))))
+
+(setq-default mode-line-format
+      '("%e"
+        (:propertize (:eval (if (or defining-kbd-macro executing-kbd-macro) " MACRO " "")) face highlight)
+        mode-line-front-space
+        mode-line-mule-info
+        mode-line-client
+        mode-line-modified
+        mode-line-remote
+        mode-line-frame-identification
+        mode-line-buffer-identification
+        "  "
+        mode-line-position
+        (vc-mode vc-mode)
+        "  "
+        (:propertize mode-name face mode-line-emphasis help-echo "Major mode")
+        "  "
+        (:eval (+doom-selection-info))
+        "  "
+        mode-line-misc-info
+        mode-line-end-spaces))
+
 ;; show matching parentheses
 (show-paren-mode +1)
 
@@ -173,7 +217,7 @@
 (column-number-mode t)
 (size-indication-mode t)
 
-(setq tooltip-use-echo-area t)
+(setq tooltip-mode t)
 
 (setq linum-format " %i ")
 
@@ -458,6 +502,8 @@
 (use-package cider
   :ensure t
   :commands cider-mode
+  :init
+  (setq cider-font-lock-dynamically '(macro core function var))
   :config
   (setq cider-lein-parameters "repl :headless :host localhost")
   (setq nrepl-log-messages t)
@@ -554,12 +600,21 @@
   :ensure t
   :init
   (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config))
+  (doom-themes-neotree-config)
+  (doom-themes-org-config))
 
-(use-package custom
-  :config
-  (setq custom-file (concat (file-name-as-directory user-emacs-directory) "custom.el"))
-  (load custom-file 'no-error 'no-message))
+(use-package theme
+  :init
+  (if (window-system)
+      (load-theme 'doom-one-light t))
+  (set-face-attribute 'anzu-mode-line nil
+                      :foreground (face-attribute 'default :background)
+                      :background (face-attribute 'mode-line-emphasis :foreground nil 'default)
+                      :weight 'normal)
+  (set-face-attribute 'anzu-mode-line-no-match nil
+                      :foreground (face-attribute 'default :background)
+                      :background (face-attribute 'error :foreground)
+                      :weight 'normal))
 
 (use-package adoc-mode
   :ensure t
@@ -568,58 +623,9 @@
   (add-to-list 'auto-mode-alist '("\\.asciidoc\\'" . adoc-mode))
   (add-to-list 'auto-mode-alist '("\\.adoc\\'" . adoc-mode)))
 
-;; (require 'all-the-icons)
-;; (setq my/vcs
-;;   (when vc-mode
-;;     (let ((backend (vc-backend buffer-file-name))
-;;           (state   (vc-state buffer-file-name))
-;;           (face    'mode-line-inactive)
-;;           (all-the-icons-scale-factor 1.0)
-;;           (all-the-icons-default-adjust -0.1))
-;;       (concat
-;;               (cond ((memq state '(edited added))
-;;                      (all-the-icons-octicon
-;;                       "git-branch"
-;;                       :face face
-;;                       :height 1.2
-;;                       :v-adjust -0.05))
-;;                     ((eq state 'needs-merge)
-;;                      (setq face font-lock-warning-face)
-;;                      (all-the-icons-octicon "git-merge" :face face))
-;;                     ((eq state 'needs-update)
-;;                      (setq face font-lock-warning-face)
-;;                      (all-the-icons-octicon "arrow-down" :face face))
-;;                     ((memq state '(removed conflict unregistered))
-;;                      (setq face font-lock-warning-face)
-;;                      (all-the-icons-octicon "alert" :face face))
-;;                     (t
-;;                      (setq face 'font-lock-doc-face)
-;;                      (all-the-icons-octicon
-;;                       "git-branch"
-;;                       :face face
-;;                       :height 1.2
-;;                       :v-adjust -0.05)))
-;;               " "
-;;               (propertize (substring vc-mode (+ (if (eq backend 'Hg) 2 3) 2))
-;;                           'face face)
-;;               "  "))))
-
-(setq mode-line-format
-      '("%e"
-        mode-line-front-space
-        mode-line-mule-info
-        mode-line-client
-        mode-line-modified
-        mode-line-remote
-        mode-line-frame-identification
-        mode-line-buffer-identification
-        "   "
-        mode-line-position
-        ;; my/vcs
-        (vc-mode vc-mode)
-        "  "
-        (:propertize "%m" face mode-line-emphasis)
-        mode-line-misc-info
-        mode-line-end-spaces))
+(use-package custom
+  :config
+  (setq custom-file (concat (file-name-as-directory user-emacs-directory) "custom.el"))
+  (load custom-file 'no-error 'no-message))
 
 ;;; init.el ends here

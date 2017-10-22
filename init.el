@@ -148,7 +148,7 @@ lines are selected, or the NxM dimensions of a block selection."
 (defun +macro-recording-info ()
   "Macro recording indicator."
   (if (or defining-kbd-macro executing-kbd-macro)
-      (propertize " MACRO " 'face 'highlight)
+      (propertize " MACRO " 'face '((t (:inherit highlight :weight bold))))
       ""))
 
 (setq-default mode-line-format
@@ -600,7 +600,15 @@ lines are selected, or the NxM dimensions of a block selection."
   (bind-key "M-%" 'anzu-query-replace)
   (bind-key "C-M-%" 'anzu-query-replace-regexp)
   (bind-key "C-. M-%" 'anzu-query-replace-at-cursor)
-  (bind-key "C-c C-. M-%" 'anzu-query-replace-at-cursor-thing))
+  (bind-key "C-c C-. M-%" 'anzu-query-replace-at-cursor-thing)
+  (defun +anzu-update-func (here total)
+    (when anzu--state
+      (let ((status (cl-case anzu--state
+                      (search (format " %d/%d " here total))
+                      (replace-query (format " %d Replaces " total))
+                      (replace (format " %d/%d " here total)))))
+        (propertize status 'face 'anzu-mode-line))))
+  (setq anzu-mode-line-update-function #'+anzu-update-func))
 
 (use-package doom-themes
   :ensure t
@@ -616,11 +624,11 @@ lines are selected, or the NxM dimensions of a block selection."
   (set-face-attribute 'anzu-mode-line nil
                       :foreground (face-attribute 'default :background)
                       :background (face-attribute 'mode-line-emphasis :foreground nil 'default)
-                      :weight 'normal)
+                      :weight 'bold)
   (set-face-attribute 'anzu-mode-line-no-match nil
                       :foreground (face-attribute 'default :background)
                       :background (face-attribute 'error :foreground)
-                      :weight 'normal))
+                      :weight 'bold))
 
 (use-package adoc-mode
   :ensure t

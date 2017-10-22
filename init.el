@@ -127,9 +127,8 @@
   (save-excursion (goto-char pos)
                   (current-column)))
 
-(defun +doom-selection-info ()
-  "Information about the current selection, such as how many characters and
-lines are selected, or the NxM dimensions of a block selection."
+(defun my/doom-selection-info ()
+  "Information about the current selection, such as how many characters and lines are selected, or the NxM dimensions of a block selection."
   (when mark-active
     (let ((reg-beg (region-beginning))
           (reg-end (region-end)))
@@ -145,7 +144,7 @@ lines are selected, or the NxM dimensions of a block selection."
                 (format "(%dC)" (- (1+ reg-end) reg-beg)))))
        'face 'mode-line))))
 
-(defun +macro-recording-info ()
+(defun my/macro-recording-info ()
   "Macro recording indicator."
   (if (or defining-kbd-macro executing-kbd-macro)
       (propertize " MACRO " 'face '((t (:inherit highlight :weight bold))))
@@ -153,7 +152,7 @@ lines are selected, or the NxM dimensions of a block selection."
 
 (setq-default mode-line-format
       '("%e"
-        (:eval (+macro-recording-info))
+        (:eval (my/macro-recording-info))
         mode-line-front-space
         mode-line-mule-info
         mode-line-client
@@ -167,7 +166,7 @@ lines are selected, or the NxM dimensions of a block selection."
         "  "
         (:propertize mode-name face mode-line-emphasis help-echo "Major mode")
         "  "
-        (:eval (+doom-selection-info))
+        (:eval (my/doom-selection-info))
         "  "
         mode-line-misc-info
         mode-line-end-spaces))
@@ -181,13 +180,13 @@ lines are selected, or the NxM dimensions of a block selection."
 ;; set custom themes directory
 (setq custom-theme-directory "~/.emacs.d/themes")
 
-(defun reload-theme ()
+(defun my/reload-theme ()
   "Reload current theme."
   (interactive)
   (load-theme (car custom-enabled-themes) t))
 
 ;; reload current theme
-(global-set-key (kbd "C-x M-t") 'reload-theme)
+(global-set-key (kbd "C-x M-t") #'my/reload-theme)
 
 ;; disable startup screen
 (setq inhibit-startup-screen t)
@@ -238,12 +237,12 @@ lines are selected, or the NxM dimensions of a block selection."
 (global-set-key (kbd "C-h") 'delete-backward-char)
 (global-set-key (kbd "C-c h") 'help-command)
 
-(defun top-join-line ()
+(defun my/top-join-line ()
   "Join the current line with the line beneath it."
   (interactive)
   (delete-indentation 1))
 
-(global-set-key (kbd "M-j") 'top-join-line)
+(global-set-key (kbd "M-j") #'top-join-line)
 
 (global-set-key (kbd "M-SPC") 'cycle-spacing)
 
@@ -292,25 +291,33 @@ lines are selected, or the NxM dimensions of a block selection."
   (setq recentf-max-saved-items 100
         recentf-max-menu-items 5))
 
+(defun my/viper-delete-forward-word ()
+    "Delete next word."
+    (interactive)
+    (if (eolp)
+        (delete-indentation 1)
+      (delete-region (min
+                      (save-excursion
+                       (viper-forward-word nil)
+                       (point))
+                      (line-end-position))
+                     (point))))
+
+(defun my/viper-delete-backward-word ()
+  "Delete previous word."
+  (interactive)
+  (delete-region
+   (save-excursion
+     (viper-backward-word nil)
+     (point))
+   (point)))
+
 (use-package viper
-  :init
-  ;; (defun viper-delete-forward-word ()
-  ;;   "Delete next word."
-  ;;   (interactive)
-  ;;   (if (eolp)
-  ;;       (delete-indentation 1)
-  ;;     (delete-region (min
-  ;;                     (save-excursion
-  ;;                      (viper-forward-word)
-  ;;                      (point))
-  ;;                     (line-end-position))
-  ;;                    (point))))
   :bind
   (("M-f" . viper-forward-word)
-   ("M-b" . viper-backward-word)))
-   ;; ("M-d" . evil-delete-forward-word)
-   ;; ("M-h" . evil-delete-backward-word)
-   ;; ("C-x M-h" . mark-paragraph)))
+   ("M-b" . viper-backward-word)
+   ("M-d" . my/viper-delete-forward-word)
+   ("M-h" . my/viper-delete-backward-word)))
 
 (use-package org
   :commands org-mode
@@ -601,14 +608,14 @@ lines are selected, or the NxM dimensions of a block selection."
   (bind-key "C-M-%" 'anzu-query-replace-regexp)
   (bind-key "C-. M-%" 'anzu-query-replace-at-cursor)
   (bind-key "C-c C-. M-%" 'anzu-query-replace-at-cursor-thing)
-  (defun +anzu-update-func (here total)
+  (defun my/anzu-update-func (here total)
     (when anzu--state
       (let ((status (cl-case anzu--state
                       (search (format " %d/%d " here total))
                       (replace-query (format " %d Replaces " total))
                       (replace (format " %d/%d " here total)))))
         (propertize status 'face 'anzu-mode-line))))
-  (setq anzu-mode-line-update-function #'+anzu-update-func))
+  (setq anzu-mode-line-update-function #'my/anzu-update-func))
 
 (use-package doom-themes
   :ensure t

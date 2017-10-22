@@ -487,26 +487,26 @@
   :config
   (setq flycheck-indication-mode nil))
 
-;; (use-package inf-ruby
-;;   :ensure t
-;;   :commands (inf-ruby inf-ruby-mode))
+(use-package inf-ruby
+  :ensure t
+  :commands (inf-ruby inf-ruby-mode))
 
-;; (use-package ruby-tools
-;;   :ensure t
-;;   :commands ruby-tools-mode)
+(use-package ruby-tools
+  :ensure t
+  :commands ruby-tools-mode)
 
-;; (use-package ruby-mode
-;;   :ensure t
-;;   :commands ruby-mode
-;;   :config
-;;   (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
-;;   (add-to-list 'auto-mode-alist '("Rakefile\\'" . ruby-mode))
-;;   (add-to-list 'auto-mode-alist '("Gemfile\\'" . ruby-mode))
-;;   (add-to-list 'auto-mode-alist '("Guardfile\\'" . ruby-mode))
-;;   (add-hook 'ruby-mode-hook (lambda ()
-;;                               (subword-mode +1)
-;;                               (inf-ruby-minor-mode +1)
-;;                               (ruby-tools-mode +1))))
+(use-package ruby-mode
+  :ensure t
+  :commands ruby-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("Rakefile\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("Gemfile\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("Guardfile\\'" . ruby-mode))
+  (add-hook 'ruby-mode-hook (lambda ()
+                              (subword-mode +1)
+                              (inf-ruby-minor-mode +1)
+                              (ruby-tools-mode +1))))
 
 (use-package clojure-mode
   :ensure t
@@ -535,18 +535,18 @@
               (haskell-indentation-mode +1)
               (interactive-haskell-mode +1))))
 
-;; (use-package python
-;;   :commands python-mode
-;;   :ensure anaconda-mode
-;;   :ensure company
-;;   :ensure company-anaconda
-;;   :config
-;;   (add-to-list 'company-backends 'company-anaconda)
-;;   (add-hook 'python-mode-hook
-;;             (lambda ()
-;;               (whitespace-mode +1)
-;;               (anaconda-mode +1)
-;;               (eldoc-mode +1))))
+(use-package python
+  :commands python-mode
+  :ensure anaconda-mode
+  :ensure company
+  :ensure company-anaconda
+  :config
+  (add-to-list 'company-backends 'company-anaconda)
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (whitespace-mode +1)
+              (anaconda-mode +1)
+              (eldoc-mode +1))))
 
 (use-package hl7-mode
   :load-path "site-lisp/"

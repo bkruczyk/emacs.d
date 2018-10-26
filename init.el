@@ -61,16 +61,6 @@
 (setq dired-dwim-target t)
 (turn-on-gnus-dired-mode)
 
-;;; message
-(setq message-directory "~/.mail"
-      message-auto-save-directory "~/tmp/mail"
-      message-kill-buffer-on-exit t
-      message-forward-as-mime nil
-      message-forward-ignored-headers "^Return-Path\\|^Delivered-To\\|^Received\\|^X-.*\\|^References\\|^In-Reply-To\\|^Message-ID\\|^Thread-Index\\|^Content-Language")
-
-;; specific mail server and signature configuration
-(load-file (concat user-emacs-directory "mail.el"))
-
 ;;; editing
 
 (setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
@@ -122,55 +112,6 @@
 
 ;;; ux
 
-;; selection info from doom-emacs
-(defsubst doom-column (pos)
-  (save-excursion (goto-char pos)
-                  (current-column)))
-
-(defun my/doom-selection-info ()
-  "Information about the current selection, such as how many characters and lines are selected, or the NxM dimensions of a block selection."
-  (when mark-active
-    (let ((reg-beg (region-beginning))
-          (reg-end (region-end)))
-      (propertize
-       (let ((lines (count-lines reg-beg (min (1+ reg-end) (point-max)))))
-         (cond ((bound-and-true-p rectangle-mark-mode)
-                (let ((cols (abs (- (doom-column reg-end)
-                                    (doom-column reg-beg)))))
-                  (format "(%dx%dB)" lines cols)))
-               ((> lines 1)
-                (format "(%dC %dL)" (- (1+ reg-end) reg-beg) lines))
-               (t
-                (format "(%dC)" (- (1+ reg-end) reg-beg)))))
-       'face 'mode-line))))
-
-(defun my/macro-recording-info ()
-  "Macro recording indicator."
-  (if (or defining-kbd-macro executing-kbd-macro)
-      (propertize " MACRO " 'face '((t (:inherit highlight :weight bold))))
-      ""))
-
-(setq-default mode-line-format
-      '("%e"
-        (:eval (my/macro-recording-info))
-        mode-line-front-space
-        mode-line-mule-info
-        mode-line-client
-        mode-line-modified
-        mode-line-remote
-        mode-line-frame-identification
-        mode-line-buffer-identification
-        "  "
-        mode-line-position
-        (vc-mode vc-mode)
-        "  "
-        (:propertize mode-name face mode-line-emphasis help-echo "Major mode")
-        "  "
-        (:eval (my/doom-selection-info))
-        "  "
-        mode-line-misc-info
-        mode-line-end-spaces))
-
 ;; show matching parentheses
 (show-paren-mode +1)
 
@@ -179,11 +120,6 @@
 
 ;; set custom themes directory
 (setq custom-theme-directory "~/.emacs.d/themes")
-
-(defun my/reload-theme ()
-  "Reload current theme."
-  (interactive)
-  (load-theme (car custom-enabled-themes) t))
 
 ;; reload current theme
 (global-set-key (kbd "C-x M-t") #'my/reload-theme)
@@ -223,8 +159,6 @@
 (size-indication-mode t)
 
 (setq tooltip-mode t)
-
-(setq linum-format " %i ")
 
 ;; display key strokes faster
 (setq echo-keystrokes 0.1)
@@ -327,9 +261,8 @@
   :config
   (setq org-log-done t)
   (setq org-ellipsis "⤵")
-  (setq org-directory "~/Dropbox/org")
-  (setq org-default-notes-file
-        (concat org-directory "/notes.org"))
+  (setq org-directory "~/.emacs.d/org")
+  (setq org-default-notes-file (concat org-directory "/notes.org"))
   (set-face-attribute 'org-ellipsis nil :underline nil))
 
 (use-package whitespace
@@ -362,34 +295,6 @@
   :commands projectile
   :config
   (counsel-projectile-on))
-
-(use-package notmuch
-  :commands notmuch
-  :init
-  (bind-key "C-c m" 'notmuch)
-  :config
-  (setq-default notmuch-show-indent-content nil)
-  (setq notmuch-search-oldest-first nil)
-  (setq notmuch-fcc-dirs "Archive -unread")
-  (setq notmuch-archive-tags '("-inbox" "+archive"))
-  (bind-key "a"
-            (lambda ()
-              "archive message"
-              (interactive)
-              (notmuch-search-tag '("+archive" "-inbox" "-unread" "-trash")))
-            notmuch-search-mode-map)
-  (bind-key  "i"
-             (lambda ()
-               "inbox message"
-               (interactive)
-               (notmuch-search-tag '("+inbox" "-trash" "-unread" "-archive")))
-             notmuch-search-mode-map)
-  (bind-key  "d"
-             (lambda ()
-               "trash message"
-               (interactive)
-               (notmuch-search-tag '("+trash" "-inbox" "-unread" "-archive")))
-             notmuch-search-mode-map))
 
 (use-package paradox
   :ensure t
@@ -535,37 +440,6 @@
               (haskell-indentation-mode +1)
               (interactive-haskell-mode +1))))
 
-(use-package python
-  :commands python-mode
-  :ensure anaconda-mode
-  :ensure company
-  :ensure company-anaconda
-  :config
-  (add-to-list 'company-backends 'company-anaconda)
-  (add-hook 'python-mode-hook
-            (lambda ()
-              (whitespace-mode +1)
-              (anaconda-mode +1)
-              (eldoc-mode +1))))
-
-(use-package hl7-mode
-  :load-path "site-lisp/"
-  :commands hl7-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.hl7\\'" . hl7-mode)))
-
-(use-package js2-mode
-  :ensure t
-  :commands js2-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.js\\'"    . js2-mode))
-  (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
-  :config
-  (add-hook 'js2-mode-hook (lambda ()
-                             (whitespace-mode +1)
-                             (subword-mode +1)
-                             (setq-local electric-layout-rules '((?\; . after))))))
-
 (use-package json-mode
   :ensure t
   :commands json-mode)
@@ -623,19 +497,6 @@
   (doom-themes-visual-bell-config)
   (doom-themes-neotree-config)
   (doom-themes-org-config))
-
-(use-package theme
-  :init
-  (if (window-system)
-      (load-theme 'doom-one-light t))
-  (set-face-attribute 'anzu-mode-line nil
-                      :foreground (face-attribute 'default :background)
-                      :background (face-attribute 'mode-line-emphasis :foreground nil 'default)
-                      :weight 'bold)
-  (set-face-attribute 'anzu-mode-line-no-match nil
-                      :foreground (face-attribute 'default :background)
-                      :background (face-attribute 'error :foreground)
-                      :weight 'bold))
 
 (use-package adoc-mode
   :ensure t

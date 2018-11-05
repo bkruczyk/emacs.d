@@ -23,180 +23,11 @@
 
 ;;; Code:
 
-;;; misc
-
-;; enable y/n answers
-(fset 'yes-or-no-p 'y-or-n-p)
-
-;; focus on help window
-(setq help-window-select t)
-
-;; always load newest byte code
-(setq load-prefer-newer t)
-
-;; reduce the frequency of garbage collection by making it happen on
-;; each 50MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 100000000)
-
-;; warn when opening files bigger than 100MB
-(setq large-file-warning-threshold 100000000)
-
-;; store all backup and autosave files in the tmp dir
-(setq backup-directory-alist `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
-
-;; more useful frame title, that show either a file or a
-;; buffer name (if the buffer isn't visiting a file)
-(setq frame-title-format
-      '((:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name)) "%b"))))
-
-;; supress ad-redefinition messages
-(setq ad-redefinition-action 'accept)
-
-;; follow symlinks
-(setq vc-follow-symlinks t)
-
-;; dired
-(setq dired-dwim-target t)
-(turn-on-gnus-dired-mode)
-
-;;; editing
-
-(setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
-(setq-default tab-width 8)            ;; but maintain correct appearance
-
-;; delete the selection with a keypress
-(delete-selection-mode t)
-
-;; revert buffers automatically when underlying files are changed externally
-(global-auto-revert-mode t)
-
-;; smart tab behavior - indent or complete
-(setq tab-always-indent 'complete)
-
-;; enable narrowing commands
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
-(put 'narrow-to-defun 'disabled nil)
-
-;; enabled change region case commands
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-
-;; enable erase-buffer command
-(put 'erase-buffer 'disabled nil)
-
-;; enable find-alternate-file in dired
-(put 'dired-find-alternate-file 'disabled nil)
-
-;; hippie expand is dabbrev expand on steroids
-(setq hippie-expand-try-functions-list '(try-expand-dabbrev
-                                         try-expand-dabbrev-all-buffers
-                                         try-expand-dabbrev-from-kill
-                                         try-complete-file-name-partially
-                                         try-complete-file-name
-                                         try-expand-all-abbrevs
-                                         try-expand-list
-                                         try-expand-line
-                                         try-complete-lisp-symbol-partially
-                                         try-complete-lisp-symbol))
-
-;; .zsh file is shell script too
-(add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
-
-;; display startup time
-(add-hook 'after-init-hook
-          (lambda ()
-            (message (format "Emacs started in %s" (emacs-init-time)))))
-
-;;; ux
-
-;; show matching parentheses
-(show-paren-mode +1)
-
-;; do not use .Xresources or .Xdefaults
-(setq inhibit-x-resources t)
-
-;; set custom themes directory
-(setq custom-theme-directory "~/.emacs.d/themes")
-
-;; reload current theme
-(global-set-key (kbd "C-x M-t") #'my/reload-theme)
-
-;; disable startup screen
-(setq inhibit-startup-screen t)
-
-;; disable toolbar
-(tool-bar-mode -1)
-
-;; disable menubar
-(menu-bar-mode -1)
-
-;; disable scrollbar
-(scroll-bar-mode -1)
-
-;; the blinking cursor is nothing, but an annoyance
-(blink-cursor-mode -1)
-
-;; history-rewind for window layouts, C-c + right/left arrow key
-(winner-mode +1)
-
-;; use shift + arrow keys to switch between visible buffers
-(windmove-default-keybindings)
-
-;; nice scrolling
-(setq scroll-margin 0
-      scroll-conservatively 100000
-      scroll-preserve-screen-position 1
-      fast-but-imprecise-scrolling t)
-(setq mouse-wheel-progressive-speed nil
-      mouse-wheel-scroll-amount '(2 ((shift) . 10)))
-
-;; mode line settings
-(line-number-mode t)
-(column-number-mode t)
-(size-indication-mode t)
-
-(setq tooltip-mode t)
-
-;; display key strokes faster
-(setq echo-keystrokes 0.1)
-
-;; don't display ediff navigation window in separate frame
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-
-;;; keybindings
-
-(global-set-key (kbd "C-h") 'delete-backward-char)
-(global-set-key (kbd "C-c h") 'help-command)
-
-(defun my/top-join-line ()
-  "Join the current line with the line beneath it."
-  (interactive)
-  (delete-indentation 1))
-
-(global-set-key (kbd "M-j") #'top-join-line)
-
-(global-set-key (kbd "M-SPC") 'cycle-spacing)
-
-;; Font size
-(global-set-key (kbd "C-+") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
-
-;; Align arbitrary text to columns by regexp
-(global-set-key (kbd "C-x |") 'align-regexp)
-
-;; use hippie-expand instead of dabbrev
-(global-set-key (kbd "M-/") 'hippie-expand)
-
-;; replace buffer-menu with ibuffer
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-
-;; toggle menu-bar visibility
-(global-set-key (kbd "<f12>") 'menu-bar-mode)
-
-;;; packages
+(require 'core (concat user-emacs-directory "core/core.el"))
+(require 'core-editor (concat user-emacs-directory "core/core-editor.el"))
+(require 'core-ui (concat user-emacs-directory "core/core-ui.el"))
+(require 'core-keybinds (concat user-emacs-directory "core/core-keybinds.el"))
+(require 'core-os (concat user-emacs-directory "core/core-os.el"))
 
 (require 'package)
 (add-to-list 'package-archives
@@ -211,20 +42,6 @@
 (require 'use-package)
 
 ;; builtins
-(use-package recentf
-  :commands recentf
-  :init
-  (defvar recentf-run #'recentf-open-files "Function to run recentf with.")
-  (bind-key "C-x F"
-            (lambda ()
-              (interactive)
-              (require 'recentf)
-              (funcall recentf-run)))
-  :config
-  (recentf-mode +1)
-  (setq recentf-max-saved-items 100
-        recentf-max-menu-items 5))
-
 (defun my/viper-delete-forward-word ()
     "Delete next word."
     (interactive)
@@ -260,21 +77,8 @@
   (bind-key "C-c c" 'org-capture)
   :config
   (setq org-log-done t)
-  (setq org-ellipsis "⤵")
   (setq org-directory "~/.emacs.d/org")
-  (setq org-default-notes-file (concat org-directory "/notes.org"))
-  (set-face-attribute 'org-ellipsis nil :underline nil))
-
-(use-package whitespace
-  :commands whitespace-mode
-  :config
-  (setq whitespace-line-column 80)
-  (setq whitespace-style '(face trailing empty tabs)))
-
-(use-package re-builder
-  :commands re-builder
-  :config
-  (setq reb-re-syntax 'string))
+  (setq org-default-notes-file (concat org-directory "/notes.org")))
 
 ;; gnu and melpa packages
 
@@ -289,26 +93,11 @@
   :ensure t
   :bind ("<f8>" . neotree-toggle))
 
-(use-package projectile
-  :ensure t
-  :ensure counsel-projectile
-  :commands projectile
-  :config
-  (counsel-projectile-on))
-
-(use-package paradox
-  :ensure t
-  :commands paradox-list-packages
-  :config
-  (setq paradox-execute-asynchronously t)
-  (setq paradox-automatically-star t))
-
 (use-package discover-my-major
   :ensure t
   :commands discover-my-major discover-my-mode
   :init
-  (bind-key "C-c C-h M-m" 'discover-my-major)
-  (bind-key "C-c C-h M-M" 'discover-my-mode))
+  (bind-key "C-x M-m" 'discover-my-major))
 
 (use-package volatile-highlights
   :ensure t
@@ -323,10 +112,6 @@
   :init
   (add-to-list 'auto-mode-alist '("\\.markdown\\'" . gfm-mode))
   (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode)))
-
-(use-package rainbow-mode
-  :ensure t
-  :commands rainbow-mode)
 
 (use-package magit
   :ensure t
@@ -347,10 +132,6 @@
   (global-diff-hl-mode +1)
   (diff-hl-margin-mode))
 
-(use-package rainbow-delimiters
-  :ensure t
-  :commands rainbow-delimiters-mode)
-
 (use-package parinfer
   :ensure t
   :bind (("C-," . parinfer-toggle-mode))
@@ -365,8 +146,7 @@
   :init
   (add-hook 'prog-mode-hook (lambda ()
                               (subword-mode +1)
-                              (eldoc-mode +1)
-                              (whitespace-mode +1)))
+                              (eldoc-mode +1)))
   (add-hook 'lisp-mode-hook (lambda ()
                               (run-hooks 'prog-mode-hook)))
   (add-hook 'emacs-lisp-mode-hook (lambda ()
@@ -467,12 +247,10 @@
   :ensure counsel
   :init
   (ivy-mode +1)
-  (setq recentf-run #'ivy-recentf)
   :config
   ;; (bind-key "C-s" 'swiper)
   (bind-key "C-c C-r" 'ivy-resume)
-  (bind-key "M-x" 'counsel-M-x)
-  (bind-key "C-x M-m" 'counsel-M-x))
+  (bind-key "M-x" 'counsel-M-x))
 
 (use-package anzu
   :ensure t
@@ -495,15 +273,7 @@
   :ensure t
   :init
   (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config)
-  (doom-themes-org-config))
-
-(use-package adoc-mode
-  :ensure t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.ascii\\'" . adoc-mode))
-  (add-to-list 'auto-mode-alist '("\\.asciidoc\\'" . adoc-mode))
-  (add-to-list 'auto-mode-alist '("\\.adoc\\'" . adoc-mode)))
+  (doom-themes-neotree-config))
 
 (use-package custom
   :config

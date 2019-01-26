@@ -1,3 +1,5 @@
+(require 'core)
+
 (setq-default indent-tabs-mode nil
               tab-width 4)
 
@@ -54,16 +56,16 @@
               ediff-split-window-function #'split-window-horizontally
               ediff-window-setup-function #'ediff-setup-windows-plain) ;; don't display ediff navigation window in separate frame
 
-(setq-default savehist-file (concat doom-cache-dir "savehist")
+(setq-default savehist-file (concat soup-cache-dir "savehist")
               savehist-save-minibuffer-history t
               savehist-autosave-interval nil ; save on kill only
               savehist-additional-variables '(kill-ring search-ring regexp-search-ring)
-              save-place-file (concat doom-cache-dir "saveplace"))
+              save-place-file (concat soup-cache-dir "saveplace"))
 
 (savehist-mode t)
 (save-place-mode t)
 
-(setq-default recentf-save-file (concat doom-cache-dir "recentf")
+(setq-default recentf-save-file (concat soup-cache-dir "recentf")
               recentf-max-menu-items 0
               recentf-max-saved-items 300
               recentf-filename-handlers '(file-truename)
@@ -71,7 +73,7 @@
               (list "^/tmp/" "^/ssh:" "\\.?ido\\.last$" "\\.revive$" "/TAGS$"
                     "^/var/folders/.+$"
                     ;; ignore private DOOM temp files (but not all of them)
-                    (concat "^" (file-truename doom-local-dir))))
+                    (concat "^" (file-truename soup-cache-dir))))
 (recentf-mode t)
 
 ;; enable y/n answers
@@ -80,11 +82,9 @@
 ;; focus on help window
 (setq help-window-select t)
 
-;; temporary windows often have q bound to `quit-window', which only buries the
-;; contained buffer. I rarely don't want that buffer killed, so...
-(defun doom*quit-window (orig-fn &optional kill window)
+(defun soup--quit-window (orig-fn &optional kill window)
   (funcall orig-fn (not kill) window))
-(advice-add #'quit-window :around #'doom*quit-window)
+(advice-add #'quit-window :around #'soup--quit-window)
 
 (setq-default dired-dwim-target t)
 

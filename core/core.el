@@ -1,21 +1,5 @@
-(defvar doom-emacs-dir (file-truename user-emacs-directory)
-  "The path to this emacs.d directory.")
-
-(defvar doom-local-dir (concat doom-emacs-dir ".local/")
-  "Root directory for local Emacs files. Use this as permanent storage for files
-that are safe to share across systems (if this config is symlinked across
-several computers).")
-
-(defvar doom-etc-dir (concat doom-local-dir "etc/")
-  "Directory for non-volatile storage.
-
-Use this for files that don't change much, like servers binaries, external
-dependencies or long-term shared data.")
-
-(defvar doom-cache-dir (concat doom-local-dir "cache/")
-  "Directory for volatile storage.
-
-Use this for files that change often, like cache files.")
+(defvar soup-local-dir (concat user-emacs-directory ".local/"))
+(defvar soup-cache-dir (concat soup-local-dir "cache/"))
 
 ;; utf-8 as the default coding system
 (when (fboundp 'set-charset-priority)
@@ -34,6 +18,8 @@ Use this for files that change often, like cache files.")
 
 ;; do not create lockfiles
 (setq create-lockfiles nil)
+
+(setq custom-file (concat soup-local-dir "custom.el"))
 
 ;; supress ad-redefinition messages
 (setq ad-redefinition-action 'accept)
@@ -55,7 +41,6 @@ Use this for files that change often, like cache files.")
 
 (setq-default apropos-do-all t)
 
-(setq confirm-nonexistent-file-or-buffer t)
 (setq enable-recursive-minibuffers nil)
 (setq idle-update-delay 2)
 

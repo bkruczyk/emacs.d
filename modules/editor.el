@@ -26,9 +26,10 @@
      (point))
    (point)))
 
-(use-package viper
-  :bind
-  (("M-f" . viper-forward-word)
-   ("M-b" . viper-backward-word)
-   ("M-d" . my/viper-delete-forward-word)
-   ("M-h" . my/viper-delete-backward-word)))
+;; vi-like movement
+;; (use-package viper
+;;   :bind
+;;   (("M-f" . viper-forward-word)
+;;    ("M-b" . viper-backward-word)
+;;    ("M-d" . my/viper-delete-forward-word)
+;;    ("M-h" . my/viper-delete-backward-word)))

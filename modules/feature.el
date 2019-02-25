@@ -5,7 +5,6 @@
   :init
   (ivy-mode +1)
   :config
-  ;; (bind-key "C-s" 'swiper)
   (bind-key "C-c C-r" 'ivy-resume)
   (bind-key "M-x" 'counsel-M-x))
 
@@ -15,8 +14,6 @@
   (global-anzu-mode +1)
   (bind-key "M-%" 'anzu-query-replace)
   (bind-key "C-M-%" 'anzu-query-replace-regexp)
-  (bind-key "C-. M-%" 'anzu-query-replace-at-cursor)
-  (bind-key "C-c C-. M-%" 'anzu-query-replace-at-cursor-thing)
   (defun my/anzu-update-func (here total)
     (when anzu--state
       (let ((status (cl-case anzu--state

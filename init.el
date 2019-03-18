@@ -33,6 +33,7 @@
 (load-file (concat user-emacs-directory "modules/editor.el"))
 (load-file (concat user-emacs-directory "modules/feature.el"))
 (load-file (concat user-emacs-directory "modules/ui.el"))
+;; (load-file (concat user-emacs-directory "modules/modeline.el"))
 (load-file (concat user-emacs-directory "modules/org.el"))
 (load-file (concat user-emacs-directory "modules/prog.el"))
 (load-file (concat user-emacs-directory "modules/git.el"))

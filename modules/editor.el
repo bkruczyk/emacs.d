@@ -4,32 +4,28 @@
   (volatile-highlights-mode +1))
 
 (use-package zop-to-char :ensure t)
+(use-package discover-my-major :ensure t)
 
-(defun my/viper-delete-forward-word ()
-    "Delete next word."
-    (interactive)
-    (if (eolp)
-        (delete-indentation 1)
-      (delete-region (min
-                      (save-excursion
-                       (viper-forward-word nil)
-                       (point))
-                      (line-end-position))
-                     (point))))
+(use-package ivy
+  :ensure t
+  :ensure counsel
+  :init
+  (ivy-mode +1)
+  :config
+  (bind-key "C-c C-r" 'ivy-resume)
+  (bind-key "M-x" 'counsel-M-x))
 
-(defun my/viper-delete-backward-word ()
-  "Delete previous word."
-  (interactive)
-  (delete-region
-   (save-excursion
-     (viper-backward-word nil)
-     (point))
-   (point)))
-
-;; vi-like movement
-;; (use-package viper
-;;   :bind
-;;   (("M-f" . viper-forward-word)
-;;    ("M-b" . viper-backward-word)
-;;    ("M-d" . my/viper-delete-forward-word)
-;;    ("M-h" . my/viper-delete-backward-word)))
+(use-package anzu
+  :ensure t
+  :config
+  (global-anzu-mode +1)
+  (bind-key "M-%" 'anzu-query-replace)
+  (bind-key "C-M-%" 'anzu-query-replace-regexp)
+  (defun soup--anzu-update-func (here total)
+    (when anzu--state
+      (let ((status (cl-case anzu--state
+                      (search (format " %d/%d " here total))
+                      (replace-query (format " %d Replaces " total))
+                      (replace (format " %d/%d " here total)))))
+        (propertize status 'face 'anzu-mode-line))))
+  (setq anzu-mode-line-update-function #'soup--anzu-update-func))

@@ -1,51 +1,21 @@
 (defvar soup-local-dir (concat user-emacs-directory ".local/"))
 (defvar soup-cache-dir (concat soup-local-dir "cache/"))
-
-;; utf-8 as the default coding system
-(when (fboundp 'set-charset-priority)
-  (set-charset-priority 'unicode))
-(prefer-coding-system        'utf-8)
-(set-terminal-coding-system  'utf-8)
-(set-keyboard-coding-system  'utf-8)
-(set-selection-coding-system 'utf-8)
-(setq locale-coding-system   'utf-8)
-(setq-default buffer-file-coding-system 'utf-8)
-
-;; store all backup and autosave files in the tmp dir
-(setq backup-directory-alist `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
-(setq auto-save-list-file-prefix nil)
-
-;; do not create lockfiles
-(setq create-lockfiles nil)
-
 (setq custom-file (concat soup-local-dir "custom.el"))
 
-;; supress ad-redefinition messages
+;; 
 (setq ad-redefinition-action 'accept)
 
-;; always load newest byte code
-(setq load-prefer-newer t)
-
-;; reduce the frequency of garbage collection by making it happen on
-;; each 50MB of allocated data (the default is on every 0.76MB)
+;;
 (setq gc-cons-threshold 100000000)
 
-(setq large-file-warning-threshold 1000000)
-
-(setq history-length 500)
-
-(setq-default compilation-always-kill t
-              compilation-ask-about-save nil
-              compilation-scroll-output t)
-
-(setq-default apropos-do-all t)
-
-(setq enable-recursive-minibuffers nil)
+;; idle time before updating various things on the screen
 (setq idle-update-delay 2)
 
-;; keep the point out of the minibuffer
-(setq minibuffer-prompt-properties '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
+;; disable bidirectional text rendering for a modest performance boost.
+(setq-default bidi-display-reordering 'left-to-right)
+
+;; remove command line options that aren't relevant to our current OS; that
+;; means less to process at startup.
+(setq command-line-ns-option-alist nil)
 
 (provide 'core)
-;;; core.el ends here
